@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="200.0" prefWidth="200.0" styleClass="pane_room" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.Employee.RoomPaneController">
+    <children>
+        <FontAwesomeIcon glyphName="HOME" layoutX="66.0" layoutY="65.0" size="5em" />
+        <Label fx:id="roomNumberLabel" layoutX="26.0" layoutY="81.0" prefHeight="17.0" prefWidth="96.0" text="Số Phòng: ">
+            <font>
+                <Font name="System Bold" size="14.0" />
+            </font>
+        </Label>
+        <Label fx:id="priceLabel" layoutX="25.0" layoutY="111.0" prefHeight="20.0" prefWidth="174.0" text="Giá phòng: ">
+            <font>
+                <Font name="System Bold" size="14.0" />
+            </font>
+        </Label>
+        <Label fx:id="statusLabel" layoutX="25.0" layoutY="145.0" prefHeight="17.0" prefWidth="149.0" text="Trạng Thái: ">
+            <font>
+                <Font name="System Bold" size="14.0" />
+            </font>
+        </Label>
+    </children>
+</AnchorPane>

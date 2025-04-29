@@ -1,0 +1,81 @@
+.left-form {
+    -fx-background-color: linear-gradient(to bottom right, #5aaf92, #7d3a46);
+    -fx-border-color: #000;
+    -fx-border-width: 0.5px 0px 0.5px 0.5px;
+}
+
+.right-form {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #000;
+    -fx-border-width: 0.5px 0.5px 0.5px 0px;
+}
+
+.close {
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+}
+.close:hover {
+    -fx-background-color: #ff4f6c;
+}
+
+.forgot {
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+    -fx-font-size: 16px;
+    -fx-text-fill: #4a4a4a;
+}
+.forgot:hover {
+    -fx-text-fill: #ff4f6c;
+}
+
+.textField {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #000;
+    -fx-border-width: 1px;
+    -fx-border-radius: 6px;
+    -fx-font-size: 16px;
+    -fx-font-family: "Tahoma";
+    -fx-padding: 8px;
+}
+.textField:focused {
+    -fx-background-color: linear-gradient(to bottom right, #c1f0db, #ffb3b3);
+    -fx-text-fill: #333;
+    -fx-border-color: #4f937a;
+}
+
+.button_login {
+    -fx-background-color: linear-gradient(to bottom right, #4f8c7d, #33504c);
+    -fx-cursor: hand;
+    -fx-font-size: 16px;
+    -fx-font-family: "Tahoma";
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-border-radius: 6px;
+    -fx-padding: 10px 15px;
+}
+.button_login:hover {
+    -fx-background-color: linear-gradient(to bottom right, #57bfa4, #427367);
+}
+
+.title {
+    -fx-font-weight: bold;
+    -fx-font-size: 30px;
+    -fx-text-fill: WHITE;
+}
+.namehotel {
+    -fx-font-size: 24px;
+    -fx-font-family: "Georgia";
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+    -fx-padding: 10px 0;
+}
+.code{
+     -fx-background-color: linear-gradient(to bottom right, #4f8c7d, #33504c);
+     -fx-padding: 8px 8px;
+     -fx-text-fill: white;
+     -fx-font-weight: bold;
+}
+.code:hover{
+ -fx-background-color: linear-gradient(to bottom right, #57bfa4, #427367);
+ }
+

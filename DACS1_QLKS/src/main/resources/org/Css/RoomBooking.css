@@ -1,0 +1,102 @@
+.root {
+    -fx-background-color: linear-gradient(to top left, #fefefe, #e8f0ff);
+        -fx-border-color: black;
+       -fx-border-width: 1px;
+       -fx-border-radius: 10px;
+}
+
+
+.button {
+    -fx-background-color: linear-gradient(to bottom, #6a11cb, #2575fc);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 10;
+    -fx-cursor: hand;
+    -fx-padding: 5px 10px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 5, 0.3, 0, 2);
+    -fx-border-color: transparent;
+}
+
+.button:hover {
+    -fx-background-color: linear-gradient(to bottom, #2575fc, #6a11cb);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+/* === TableView tổng thể === */
+.table-view {
+    -fx-table-cell-border-color: transparent;
+    -fx-padding: 5;
+    -fx-background-color: white;
+    -fx-border-color: #ccc;
+    -fx-border-width: 1;
+    -fx-font-size: 13px;
+    -fx-font-family: "Segoe UI", sans-serif;
+}
+
+/* === TableView tổng thể === */
+.table-view {
+    -fx-table-cell-border-color: transparent;
+    -fx-padding: 5;
+    -fx-background-color: white;
+    -fx-border-color: #ccc;
+    -fx-border-width: 1;
+    -fx-font-size: 13px;
+    -fx-font-family: "Segoe UI", sans-serif;
+}
+
+/* === Tiêu đề cột === */
+/* === TableView Container === */
+.table-view {
+    -fx-background-color: white;
+    -fx-border-color: #ddd;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-padding: 0;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 2);
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-font-size: 13px;
+}
+
+/* === Header background with gradient === */
+.table-view .column-header-background {
+    -fx-background-color: linear-gradient(to right, #6a11cb, #2575fc);
+    -fx-background-radius: 10 10 0 0;
+}
+
+/* === Header label style === */
+.table-view .column-header .label {
+    -fx-text-fill: black;
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+}
+
+/* === Row striping (xen kẽ) === */
+.table-row-cell:odd {
+    -fx-background-color: #f5faff;
+}
+.table-row-cell:even {
+    -fx-background-color: #ffffff;
+}
+
+/* === Hovered row === */
+.table-row-cell:hover {
+    -fx-background-color: #e0ecff;
+}
+
+/* === Selected row === */
+.table-row-cell:selected {
+    -fx-background-color: #3f75c0;
+    -fx-text-fill: white;
+}
+
+/* === Border and cell style === */
+.table-view .table-cell {
+    -fx-border-color: transparent;
+    -fx-padding: 3px;
+}
+
+/* === Filler (khoảng trống bên phải) === */
+.table-view .filler {
+    -fx-background-color: transparent;
+}
+
