@@ -21,4 +21,6 @@ module org {
     exports Controller.Employee;
     opens Controller.Login to javafx.fxml;
     exports Controller.Login;
+    opens Model to javafx.base;
+    exports Model;
 }

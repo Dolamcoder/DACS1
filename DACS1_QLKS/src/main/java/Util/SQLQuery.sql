@@ -7,13 +7,23 @@ VALUES
 
 --table room
  CREATE TABLE room (
-     id VARCHAR(10) PRIMARY KEY,                  -- Mã phòng
+     roomID VARCHAR(10) PRIMARY KEY,                  -- Mã phòng
      number INT NOT NULL,                         -- Số phòng
      loaiPhong CHAR(2),                           -- Ký hiệu loại phòng (khóa ngoại)
      price DOUBLE NOT NULL,                       -- Giá tiền
      status INT NOT NULL CHECK (status IN (1, 2, 3, 4)),  -- Trạng thái
      FOREIGN KEY (loaiPhong) REFERENCES room_type(loaiPhong)
  );
+ --booking
+ CREATE TABLE Booking (
+     bookingId VARCHAR(10) PRIMARY KEY,
+     customerId VARCHAR(10) NOT NULL,
+     roomId VARCHAR(10) NOT NULL,
+     checkInDate DATE NOT NULL,
+     checkOutDate DATE NOT NULL,
+     status ENUM('Đã xác nhận', 'Đã hoàn thành') NOT NULL
+ ) ;
+
  --table type room
  CREATE TABLE room_type (
      loaiPhong CHAR(2) PRIMARY KEY,               -- Ký hiệu loại phòng (VD: 'DB', 'TW', 'VIP')
@@ -80,8 +90,27 @@ CREATE TABLE Position (
     name VARCHAR(100) NOT NULL,
  	FOREIGN KEY (employeeId) REFERENCES employee(employeeId)
 )
-
-
-
+--SQL tìm kiếm phòng để đặt
+SELECT r.roomID, r.number, r.price, r.loaiPhong
+FROM room r
+WHERE r.loaiPhong = ?
+AND (
+    -- Trường hợp 1: Phòng hiện tại trống (status = 1)
+    r.status = 1
+    OR
+    -- Trường hợp 2: Phòng không trống (status != 1), kiểm tra lịch đặt phòng
+    r.roomID IN (
+        SELECT b.roomId
+        FROM Booking b
+        WHERE b.roomId = r.roomID
+        AND (
+            -- Trường hợp 2a: Ngày nhận phòng của bạn lớn hơn ngày trả phòng trong Booking
+            ? > b.checkOutDate
+            OR
+            -- Trường hợp 2b: Ngày nhận phòng ≤ ngày trả phòng, nhưng trạng thái là 'Đã hoàn thành'
+            (? <= b.checkOutDate AND b.status = 'Đã hoàn thành')
+        )
+    )
+);
 
 
