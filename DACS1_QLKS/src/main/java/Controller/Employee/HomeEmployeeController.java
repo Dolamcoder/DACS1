@@ -59,12 +59,7 @@ public class HomeEmployeeController {
     private Button listBookingButton;
     public void roomBooking() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/FXML/Nhan_Vien/RoomBooking.fxml"));
-            AnchorPane datPhongPane = loader.load();
-
-            RoomBookingController controller = loader.getController();
-            controller.setContentPane(contentPane);
-
+            AnchorPane datPhongPane = FXMLLoader.load(getClass().getResource("/org/FXML/Nhan_Vien/RoomBooking.fxml"));
             contentPane.getChildren().clear();
             contentPane.getChildren().add(datPhongPane);
         } catch (IOException e) {

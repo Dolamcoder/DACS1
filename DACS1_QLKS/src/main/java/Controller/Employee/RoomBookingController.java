@@ -1,10 +1,9 @@
 package Controller.Employee;
 import Dao.Employee.RoomDao;
+import Dao.Employee.Type_roomDao;
+import Model.*;
 import javafx.collections.FXCollections;
 import Dao.Employee.RoomBookingDao;
-import Model.Booking;
-import Model.Room;
-import Model.TaoID;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
@@ -19,8 +18,11 @@ import java.util.ArrayList;
 public class RoomBookingController {
     ArrayList<Room> listRoom;
     alert al=new alert();
+    Type_roomDao tDao;
+
     RoomDao roomDao;
     public RoomBookingController(){
+        tDao=new Type_roomDao();
         roomDao=new RoomDao();
         listRoom=roomDao.selectAll();
     }
@@ -58,25 +60,14 @@ public class RoomBookingController {
 
     @FXML
     private Button roomBook;
-
     @FXML
     private Button selectCustomer;
-    private AnchorPane contentPane;
 
-    public void setContentPane(AnchorPane contentPane) {
-        this.contentPane = contentPane;
-    }
-
-    public void selectCustomer() throws IOException {
-        AnchorPane selectPane = FXMLLoader.load(getClass().getResource("/org/FXML/Nhan_Vien/SelectCustomer.fxml"));
-        contentPane.getChildren().clear();
-        contentPane.getChildren().add(selectPane);
-    }
     @FXML
     private TextField soGiuong;
 
     @FXML
-    private TextField soGiuongText;
+    private TextField kichThuocText;
 
     @FXML
     private TextField soNguoi;
@@ -90,7 +81,15 @@ public class RoomBookingController {
     @FXML
     private Button timKiem;
     public void timKiem(){
-        this.timKiemPhong();
+        if(this.loaiPhong.getValue()!=null && this.soGiuong.getText().trim().isEmpty() && this.soNguoi.getText().trim().isEmpty()){
+            timKiemPhong1();
+        }
+        else if(this.loaiPhong.getValue()==null &&  !this.soGiuong.getText().trim().isEmpty() && !this.soNguoi.getText().trim().isEmpty()){
+            timKiemPhong2();
+        }
+        else{
+            al.showErrorAlert("Nếu chọn loại phòng thì không nhập số người và số giường");
+        }
     }
     @FXML
     private TableColumn<Room, String> IdRoomColum;
@@ -105,7 +104,21 @@ public class RoomBookingController {
     @FXML
     private TableColumn<Room, String> typeRoomColum;
 
-
+    @FXML
+    private AnchorPane rootPane;
+    public void selectCustomer() throws IOException {
+        AnchorPane selectPane = FXMLLoader.load(getClass().getResource("/org/FXML/Nhan_Vien/SelectCustomer.fxml"));
+        this.rootPane.getChildren().clear();
+        this.rootPane.getChildren().add(selectPane);
+    };
+    public void setCustomerData() {
+        Customer customer=selectCustomerController.customer;
+        if(customer!=null) {
+            this.CustomerID.setText(customer.getId());
+            this.nameCustomer.setText(customer.getName());
+            this.phone.setText(customer.getPhone());
+        }
+    }
     public void autoIDRoomBooking(){
         RoomBookingDao bookDao=new RoomBookingDao();
         ArrayList<Booking> listBooking=bookDao.selectAll();
@@ -150,7 +163,7 @@ public class RoomBookingController {
         // Đổ dữ liệu vào bảng
         tableRoom.setItems(FXCollections.observableArrayList(availableRooms));
     }
-    public void timKiemPhong(){
+    public void timKiemPhong1(){
         if (this.ngayNhan.getValue() == null && this.ngayTra.getValue()==null) {
             al.showErrorAlert("vui lòng nhập ngày nhận và ngày trả");
             return;
@@ -161,17 +174,65 @@ public class RoomBookingController {
         }
         typeR=this.tachMaLoaiPhong(typeR);
         LocalDate localDate = this.ngayNhan.getValue();
-        Date ngayNhan = java.sql.Date.valueOf(localDate);
+        Date ngayNhan = Date.valueOf(localDate);
         // Lấy danh sách phòng mới từ RoomDao
-        this.listRoom = roomDao.timKiemDatPhong(typeR, ngayNhan);
+        this.listRoom.clear();
+        this.listRoom = roomDao.timKiemPhong1(typeR, ngayNhan, listRoom);
         // Cập nhật lại bảng (TableView) với dữ liệu mới
         tableRoom.setItems(FXCollections.observableArrayList(listRoom));
+    }
+    public void timKiemPhong2(){
+        if (this.ngayNhan.getValue() == null && this.ngayTra.getValue()==null) {
+            al.showErrorAlert("vui lòng nhập ngày nhận và ngày trả");
+            return;
+        }
+        if(this.soGiuong.getText().trim().isEmpty() || this.soNguoi.getText().trim().isEmpty()){
+            al.showErrorAlert("Vui lòng nhập vào số giường và số người");
+            return;
+        }
+        int bedNumber = 0;
+        int peopleNumber=0;
+        try {
+            bedNumber = Integer.parseInt(this.soGiuong.getText());
+            peopleNumber=   Integer.parseInt((this.soNguoi.getText()));
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        this.listRoom.clear();
+        ArrayList<String> listTypeRoom=tDao.timKiemLoaiPhong(bedNumber, peopleNumber);
+        if(listTypeRoom==null){
+            al.showErrorAlert("Không tim thấy phòng phù hợp");
+            return;
+        }
+        LocalDate localDate = this.ngayNhan.getValue();
+        Date ngayNhan = Date.valueOf(localDate);
+        for(String x: listTypeRoom){
+            this.listRoom=roomDao.timKiemPhong1(x, ngayNhan, this.listRoom);
+        }
+        tableRoom.setItems(FXCollections.observableArrayList(listRoom));
+
+    }
+    @FXML
+    public void layDataTableView(){
+        Room room= this.tableRoom.getSelectionModel().getSelectedItem();
+        if(room==null) {
+            return;
+        }
+        type_room typeRoom=tDao.timKiem(room.getLoaiPhong());
+        this.RoomID.setText(room.getId());
+        this.soPhong.setText(room.getNumber()+"");
+        this.loaiPhongText.setText(typeRoom.getNameLoaiPhong());
+        this.kichThuocText.setText(typeRoom.getKichThuoc()+" mét vuông");
+        this.giaThue.setText(room.getPrice()+" VND");
+        this.moTa.setText(typeRoom.getMoTa());
     }
     @FXML
     public void initialize(){
         autoIDRoomBooking();
         listLoaiPhong();
         dataTableRoom();
+        setCustomerData();
     }
     public String tachMaLoaiPhong(String loaiPhong) {
         switch (loaiPhong) {

@@ -20,7 +20,7 @@ public class Type_roomDao implements DaoInterface<type_room> {
             PreparedStatement ps = con.prepareStatement(sql);
             ps.setString(1, typeRoom.getLoaiPhong());
             ps.setString(2, typeRoom.getNameLoaiPhong());
-            ps.setString(3, typeRoom.getSoGiuong());
+            ps.setInt(3, typeRoom.getSoGiuong());
             ps.setString(4, typeRoom.getMoTa());
             ps.setInt(5, typeRoom.getSucChua());
             ps.setDouble(6, typeRoom.getKichThuoc());
@@ -38,7 +38,7 @@ public class Type_roomDao implements DaoInterface<type_room> {
         try {
             PreparedStatement ps = con.prepareStatement(sql);
             ps.setString(1, typeRoom.getNameLoaiPhong());
-            ps.setString(2, typeRoom.getSoGiuong());
+            ps.setInt(2, typeRoom.getSoGiuong());
             ps.setString(3, typeRoom.getMoTa());
             ps.setInt(4, typeRoom.getSucChua());
             ps.setDouble(5, typeRoom.getKichThuoc());
@@ -77,7 +77,7 @@ public class Type_roomDao implements DaoInterface<type_room> {
                 type_room typeRoom = new type_room(
                         rs.getString("loaiPhong"),
                         rs.getString("nameLoaiPhong"),
-                        rs.getString("soGiuong"),
+                        rs.getInt("soGiuong"),
                         rs.getString("moTa"),
                         rs.getInt("sucChua"),
                         rs.getDouble("kichThuoc")
@@ -89,5 +89,52 @@ public class Type_roomDao implements DaoInterface<type_room> {
             e.printStackTrace();
         }
         return list;
+    }
+    public ArrayList<String> timKiemLoaiPhong(int bed, int sucChua){
+        ArrayList<String> listLoaiPhong=new ArrayList<>();
+        con=JDBC.getConnection();
+        String query="Select loaiPhong from room_type where soGiuong=? and sucChua=?";
+        try{
+            PreparedStatement pstm=con.prepareStatement(query);
+            pstm.setInt(1, bed);
+            pstm.setInt(2, sucChua);
+            ResultSet rs=pstm.executeQuery();
+            while(rs.next()){
+                String loaiPhong=rs.getString("loaiPhong");
+                listLoaiPhong.add(loaiPhong);
+            }
+            con.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return listLoaiPhong;
+    }
+    public type_room timKiem(String loaiPhong){
+        con=JDBC.getConnection();
+        String query="Select * from room_type where loaiPhong=?";
+        try{
+            PreparedStatement pstm=con.prepareStatement(query);
+            pstm.setString(1, loaiPhong);
+            ResultSet rs=pstm.executeQuery();
+            if(rs.next()){
+                type_room tRoom=new type_room();
+                String nameLoaiPhong=rs.getString("tenLoaiPhong");
+                int bed=rs.getInt("soGiuong");
+                int sucChua=rs.getInt("sucChua");
+                double kichThuoc=rs.getDouble("kichThuoc");
+                String moTa=rs.getString("moTa");
+                tRoom.setLoaiPhong(loaiPhong);
+                tRoom.setNameLoaiPhong(nameLoaiPhong);
+                tRoom.setSoGiuong(bed);
+                tRoom.setSucChua(sucChua);
+                tRoom.setKichThuoc(kichThuoc);
+                tRoom.setMoTa(moTa);
+                con.close();
+                return tRoom;
+            }
+            return null;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

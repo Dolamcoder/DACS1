@@ -1,22 +1,20 @@
 package Model;
 
+import java.time.LocalDate;
+
 public class Person {
     private String id;
     private String name;
     private String diaChi;
     private String phone;
     private String gender;
-    private String birth;
+    private LocalDate birth;
+    private String email;
+    private String idNumber;
     // Constructor
-    public Person(String id, String name, String diaChi, String phone, String gender, String birth) {
-        this.id = id;
-        this.name = name;
-        this.diaChi = diaChi;
-        this.phone = phone;
-        this.gender=gender;
-        this.birth=birth;
-    }
+    public Person(){
 
+    }
     // Getter và Setter
     public String getId() {
         return id;
@@ -58,11 +56,23 @@ public class Person {
         this.gender = gender;
     }
 
-    public String getBirth() {
+    public LocalDate getBirth() {
         return birth;
     }
 
-    public void setBirth(String birth) {
+    public void setBirth(LocalDate birth) {
         this.birth = birth;
+    }
+    public void setEmail(String email){
+        this.email=email;
+    }
+    public String getEmail(){
+        return this.email;
+    }
+    public void setIdNumber(String idNumber){
+        this.idNumber=idNumber;
+    }
+    public String getIdNumber(){
+        return this.idNumber;
     }
 }

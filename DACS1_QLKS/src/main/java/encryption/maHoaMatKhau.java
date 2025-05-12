@@ -1,7 +1,6 @@
 package encryption;
 
 import java.security.MessageDigest;
-
 public class maHoaMatKhau {
     public String hashPassword(String password) {
         try {

@@ -3,7 +3,7 @@ package Model;
 public class type_room {
     private String loaiPhong;
     private String nameLoaiPhong;
-    private String soGiuong;
+    private int soGiuong;
     private String moTa;
     private int sucChua;
     private double kichThuoc;
@@ -13,7 +13,7 @@ public class type_room {
     }
 
     // Constructor đầy đủ tham số
-    public type_room(String loaiPhong, String nameLoaiPhong, String soGiuong, String moTa, int sucChua, double kichThuoc) {
+    public type_room(String loaiPhong, String nameLoaiPhong, int soGiuong, String moTa, int sucChua, double kichThuoc) {
         this.loaiPhong = loaiPhong;
         this.nameLoaiPhong = nameLoaiPhong;
         this.soGiuong = soGiuong;
@@ -39,11 +39,11 @@ public class type_room {
         this.nameLoaiPhong = nameLoaiPhong;
     }
 
-    public String getSoGiuong() {
+    public int getSoGiuong() {
         return soGiuong;
     }
 
-    public void setSoGiuong(String soGiuong) {
+    public void setSoGiuong(int soGiuong) {
         this.soGiuong = soGiuong;
     }
 

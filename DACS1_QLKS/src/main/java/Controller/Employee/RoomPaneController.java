@@ -5,7 +5,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 
 public class RoomPaneController {
-
     @FXML
     private Label priceLabel;
 

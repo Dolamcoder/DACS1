@@ -1,4 +1,5 @@
 package Dao.Employee;
+
 import Model.Room;
 import Util.JDBC;
 
@@ -96,9 +97,9 @@ public class RoomDao implements DaoInterface<Room> {
 
         return null;
     }
-    public ArrayList<Room> timKiemDatPhong(String loaiPhong, Date ngayNhanPhong) {
-        con=JDBC.getConnection();
-        ArrayList<Room> rooms = new ArrayList<>();
+
+    public ArrayList<Room> timKiemPhong1(String loaiPhong, Date ngayNhanPhong, ArrayList<Room> listRoom) {
+        con = JDBC.getConnection();
         String query = "SELECT r.roomID, r.number, r.price, r.loaiPhong , r.status FROM room r WHERE r.loaiPhong = ? AND (r.status = 1 OR r.roomID IN (SELECT b.roomId FROM Booking b WHERE b.roomId = r.roomID AND (? > b.checkOutDate OR (? <= b.checkOutDate AND b.status = 'Đã hoàn thành'))))";
         try {
             PreparedStatement pstm = con.prepareStatement(query);
@@ -116,13 +117,13 @@ public class RoomDao implements DaoInterface<Room> {
                 room.setPrice(rs.getInt("price"));
                 room.setStatus(rs.getInt("status"));
                 // Bạn có thể thêm logic xử lý trạng thái phòng (status) nếu cần
-                rooms.add(room);
+                listRoom.add(room);
             }
             con.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return rooms;
+        return listRoom;
     }
 }

@@ -1,25 +1,21 @@
 package Model;
 
 public class Customer extends Person {
-    private String email;
-    private String cccd;
-
-    public Customer(String id, String name, String diaChi, String phone, String gender, String birth) {
-        super(id, name, diaChi, phone, gender, birth);
+    private String card;
+    private String status;
+    public Customer(){
+        super();
     }
-    public String getEmail() {
-        return email;
+    public void setCard(String card){
+        this.card=card;
     }
-
-    public void setEmail(String email) {
-        this.email = email;
+    public String getCard(){
+        return this.card;
     }
-
-    public String getCccd() {
-        return cccd;
+    public void setStatus(String status){
+        this.status=status;
     }
-
-    public void setCccd(String cccd) {
-        this.cccd = cccd;
+    public String getStatus(){
+        return this.status;
     }
 }
