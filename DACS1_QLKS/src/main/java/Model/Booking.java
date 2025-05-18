@@ -8,7 +8,7 @@ public class Booking {
     private String roomId;
     private LocalDate checkInDate;
     private LocalDate checkOutDate;
-    private String status; // Confirmed, Cancelled, Completed
+    private String status;
     public Booking(String bookingId, String customerId, String roomId,
                    LocalDate checkInDate, LocalDate checkOutDate, String status) {
         this.bookingId = bookingId;

@@ -2,6 +2,8 @@ package Controller.Employee;
 
 import Alert.alert;
 import Dao.Employee.CustomerDao;
+import Dao.Employee.RoomBookingDao;
+import Model.Booking;
 import Model.Customer;
 import Model.TaoID;
 import javafx.collections.FXCollections;
@@ -14,6 +16,9 @@ import javafx.scene.input.MouseEvent;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
@@ -73,8 +78,15 @@ public class selectCustomerController {
     @FXML
     private TableView<Customer> tableCustomer;
     public void autoID(){
-        TaoID taoId=new TaoID();
-        this.idCustomerText.setText(taoId.taoIDKH(listCustomer.size()+1));
+        // Tạo Set chứa các ID hiện có (lấy ID booking từ từng Booking)
+        Set<String> existingIDs = new HashSet<>();
+        for (Customer c : this.listCustomer) {
+            existingIDs.add(c.getId()); // giả sử getBookingID() là phương thức lấy ID booking kiểu String
+        }
+
+        TaoID id = new TaoID();
+        // Giả sử bạn đã bổ sung hàm randomIDRoomBooking(Set<String> existingIDs)
+        this.idCustomerText.setText(id.randomIDKH(existingIDs));
     }
     public void layObject() {
         customer=new Customer();

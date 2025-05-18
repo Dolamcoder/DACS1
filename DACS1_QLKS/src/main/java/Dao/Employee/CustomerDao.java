@@ -14,7 +14,7 @@ public class CustomerDao implements DaoInterface<Customer> {
             ps.setString(1, customer.getId());
             ps.setString(2, customer.getName());
             ps.setString(3, customer.getGender());
-            ps.setDate(4, customer.getBirth()!= null ? Date.valueOf(customer.getBirth()) : null);
+            ps.setDate(4, customer.getBirth() != null ? Date.valueOf(customer.getBirth()) : null);
             ps.setString(5, customer.getIdNumber());
             ps.setString(6, customer.getDiaChi());
             ps.setString(7, customer.getEmail());
@@ -27,6 +27,7 @@ public class CustomerDao implements DaoInterface<Customer> {
             return false;
         }
     }
+
     @Override
     public boolean update(Customer customer) {
         String sql = "UPDATE customers SET name = ?, gender = ?, birthDate = ?, idNumber = ?, address = ?, email = ?, phone = ? WHERE customerID = ?";
@@ -47,6 +48,7 @@ public class CustomerDao implements DaoInterface<Customer> {
             return false;
         }
     }
+
     @Override
     public boolean delete(String id) {
         String sql = "DELETE FROM customers WHERE customerID = ?";
@@ -60,6 +62,7 @@ public class CustomerDao implements DaoInterface<Customer> {
             return false;
         }
     }
+
     @Override
     public ArrayList<Customer> selectAll() {
         ArrayList<Customer> customers = new ArrayList<>();
@@ -84,17 +87,18 @@ public class CustomerDao implements DaoInterface<Customer> {
         }
         return customers;
     }
-    public boolean insertBooking(Customer customer){
+
+    public boolean insertBooking(Customer customer) {
         String sql = "INSERT INTO customers (customerID, name, email, phone) VALUES (?, ?, ?, ?)";
-        try (Connection con = JDBC.getConnection(); PreparedStatement ps = con.prepareStatement(sql)){
+        try (Connection con = JDBC.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, customer.getId());
             ps.setString(2, customer.getName());
             ps.setString(3, customer.getEmail());
             ps.setString(4, customer.getPhone());
             int rowsAffected = ps.executeUpdate();
             con.close();
-            return rowsAffected>0;
-        }catch(SQLException e){
+            return rowsAffected > 0;
+        } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
@@ -114,5 +118,23 @@ public class CustomerDao implements DaoInterface<Customer> {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public Customer searchById(String id) {
+        String sql = "SELECT customerID, name FROM customers WHERE customerID = ?";
+        try (Connection con = JDBC.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    Customer customer = new Customer();
+                    customer.setId(rs.getString("customerID"));
+                    customer.setName(rs.getString("name"));
+                    return customer;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null; // Không tìm thấy khách hàng
     }
 }

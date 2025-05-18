@@ -126,4 +126,20 @@ public class RoomDao implements DaoInterface<Room> {
 
         return listRoom;
     }
+    public boolean updateStatus(String roomId, int newStatus) {
+        con=JDBC.getConnection();
+        String query = "UPDATE room SET status = ? WHERE roomID = ?";
+        try {
+            PreparedStatement pstm = con.prepareStatement(query);
+            pstm.setInt(1, newStatus);
+            pstm.setString(2, roomId);
+
+            int rowsAffected = pstm.executeUpdate();
+            con.close();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

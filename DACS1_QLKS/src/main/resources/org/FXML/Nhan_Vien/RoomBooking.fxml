@@ -94,8 +94,8 @@
                 <TableColumn fx:id="priceRoomColum" prefWidth="138.0" text="Giá Phòng" />
             </columns>
         </TableView>
-        <Button fx:id="roomBook" layoutX="794.0" layoutY="492.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="92.0" stylesheets="@../../Css/RoomBooking.css" text="Đặt Phòng" />
-        <Button layoutX="26.0" layoutY="14.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="113.0" stylesheets="@../../Css/RoomBooking.css" text="Đặt Dịch Vụ" />
+        <Button fx:id="roomBook" layoutX="794.0" layoutY="492.0" mnemonicParsing="false" onAction="#datPhong" prefHeight="29.0" prefWidth="92.0" stylesheets="@../../Css/RoomBooking.css" text="Đặt Phòng" />
+        <Button fx:id="service" layoutX="26.0" layoutY="14.0" mnemonicParsing="false" onAction="#Servicebutton" prefHeight="25.0" prefWidth="113.0" stylesheets="@../../Css/RoomBooking.css" text="Đặt Dịch Vụ" />
         <Label layoutX="533.0" layoutY="87.0" text="Mã Phòng:">
             <font>
                 <Font name="System Bold" size="14.0" />

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="541.0" prefWidth="902.0" stylesheets="@../../Css/RoomBooking.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.Employee.ServiceBookingController">
+    <children>
+        <!-- Bảng danh sách dịch vụ -->
+        <TableView fx:id="serviceTable" layoutX="14.0" layoutY="98.0" prefHeight="400.0" prefWidth="440.0">
+            <columns>
+                <TableColumn fx:id="idServecie" prefWidth="80.0" text="Mã DV" />
+                <TableColumn fx:id="nameService" prefWidth="120.0" text="Tên Dịch Vụ" />
+                <TableColumn fx:id="moTaService" prefWidth="150.0" text="Mô Tả" />
+                <TableColumn fx:id="priceService" prefWidth="90.0" text="Giá" />
+            </columns>
+        </TableView>
+
+        <!-- Bảng dịch vụ đã chọn -->
+        <TableView fx:id="selectedServiceTable" layoutX="482.0" layoutY="178.0" prefHeight="320.0" prefWidth="408.0">
+            <columns>
+                <TableColumn fx:id="stt" prefWidth="132.0" text="Mã DV" />
+                <TableColumn fx:id="nameService2" prefWidth="153.0" text="Tên Dịch Vụ" />
+                <TableColumn fx:id="priceService2" prefWidth="154.0" text="Giá" />
+            </columns>
+        </TableView>
+
+        <!-- Thông tin khách hàng -->
+        <Label layoutX="638.0" layoutY="103.0" text="Mã KH:" />
+
+        <Label layoutX="637.0" layoutY="135.0" text="Tên KH:" />
+        <TextField fx:id="idCustomer" editable="false" layoutX="686.0" layoutY="99.0" prefWidth="180.0" />
+        <TextField fx:id="nameCustomer" editable="false" layoutX="686.0" layoutY="131.0" prefWidth="180.0" />
+      <Label fx:id="tongTien" layoutX="535.0" layoutY="507.0" text="Tổng cộng: 0VND">
+         <font>
+            <Font name="System Bold" size="17.0" />
+         </font>
+      </Label>
+      <Label layoutX="456.0" layoutY="25.0" prefHeight="32.0" prefWidth="150.0" text="ĐẶT DỊCH VỤ">
+         <font>
+            <Font name="System Bold" size="22.0" />
+         </font>
+      </Label>
+      <Button fx:id="confirm" layoutX="803.0" layoutY="505.0" mnemonicParsing="false" onAction="#handlePlaceServiceBooking" text="Xác nhận" />
+      <ComboBox fx:id="slectCustomer" layoutX="474.0" layoutY="99.0" onAction="#handleCustomerSelection" prefWidth="150.0" promptText="Chọn khách hàng" stylesheets="@../../Css/RoomBooking.css" />
+      <Button fx:id="remove" layoutX="356.0" layoutY="505.0" mnemonicParsing="false" onAction="#handleRemoveService" prefHeight="29.0" prefWidth="62.0" text="Xoá" />
+      <Button fx:id="add" layoutX="260.0" layoutY="505.0" mnemonicParsing="false" onAction="#handleAddService" text="Thêm" />
+
+    </children>
+</AnchorPane>

@@ -139,12 +139,17 @@ CREATE TABLE service (
 -- Tạo bảng servicebooking
 CREATE TABLE servicebooking (
     serviceBookingID VARCHAR(10) PRIMARY KEY,
-    serviceID INT,
     customerID VARCHAR(10),
     quantity INT,
-    orderDate DATE,
-    FOREIGN KEY (serviceID) REFERENCES service(serviceID),
+    totalAmount decimal(10,2);
     FOREIGN KEY (customerID) REFERENCES customers(customerID)
+);
+CREATE TABLE ServiceBookingDetail (
+  	stt INT AUTO_INCREMENT PRIMARY KEY,  	 -- STT tự động tăng
+    ServiceBookingID VARCHAR(10),              -- FK đến đơn đặt
+    ServiceID INT,                             -- FK đến dịch vụ
+    FOREIGN KEY (ServiceBookingID) REFERENCES ServiceBooking(ServiceBookingID),
+    FOREIGN KEY (ServiceID) REFERENCES Service(ServiceID)
 );
 
 -- Tạo bảng invoice

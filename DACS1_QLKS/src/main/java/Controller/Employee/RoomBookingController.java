@@ -1,7 +1,12 @@
 package Controller.Employee;
 import Dao.Employee.RoomDao;
 import Dao.Employee.Type_roomDao;
+import Mail.MailThongBaoHotel;
 import Model.*;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import Dao.Employee.RoomBookingDao;
 import javafx.fxml.FXML;
@@ -10,16 +15,20 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import Alert.alert;
+import javafx.util.Duration;
+
 import java.io.IOException;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 public class RoomBookingController {
     ArrayList<Room> listRoom;
     alert al=new alert();
     Type_roomDao tDao;
-
+    private String email;
     RoomDao roomDao;
     public RoomBookingController(){
         tDao=new Type_roomDao();
@@ -103,7 +112,8 @@ public class RoomBookingController {
 
     @FXML
     private TableColumn<Room, String> typeRoomColum;
-
+    @FXML
+    private Button service;
     @FXML
     private AnchorPane rootPane;
     public void selectCustomer() throws IOException {
@@ -117,14 +127,24 @@ public class RoomBookingController {
             this.CustomerID.setText(customer.getId());
             this.nameCustomer.setText(customer.getName());
             this.phone.setText(customer.getPhone());
+            this.email=customer.getEmail();
         }
     }
-    public void autoIDRoomBooking(){
-        RoomBookingDao bookDao=new RoomBookingDao();
-        ArrayList<Booking> listBooking=bookDao.selectAll();
-        TaoID id=new TaoID();
-        this.RoomBookingID.setText(id.taoIDRoomBooking(listBooking.size()+1));
+    public void autoIDRoomBooking() {
+        RoomBookingDao bookDao = new RoomBookingDao();
+        ArrayList<Booking> listBooking = bookDao.selectAll();
+
+        // Tạo Set chứa các ID hiện có (lấy ID booking từ từng Booking)
+        Set<String> existingIDs = new HashSet<>();
+        for (Booking b : listBooking) {
+            existingIDs.add(b.getBookingId()); // giả sử getBookingID() là phương thức lấy ID booking kiểu String
+        }
+
+        TaoID id = new TaoID();
+        // Giả sử bạn đã bổ sung hàm randomIDRoomBooking(Set<String> existingIDs)
+        this.RoomBookingID.setText(id.randomIDRoomBooking(existingIDs));
     }
+
     public void listLoaiPhong() {
         // Tạo danh sách các loại phòng
         loaiPhong.setItems(FXCollections.observableArrayList(
@@ -227,12 +247,131 @@ public class RoomBookingController {
         this.giaThue.setText(room.getPrice()+" VND");
         this.moTa.setText(typeRoom.getMoTa());
     }
+    public Booking layDatPhong() {
+        if (CustomerID.getText().trim().isEmpty() || RoomID.getText().trim().isEmpty() ||
+                ngayNhan.getValue() == null || ngayTra.getValue() == null) {
+            al.showErrorAlert("Vui lòng nhập đầy đủ thông tin đặt phòng.");
+            return null;
+        }
+
+        String bookingId = RoomBookingID.getText().trim();
+        String customerId = CustomerID.getText().trim();
+        String roomId = RoomID.getText().trim();
+        LocalDate checkInDate = ngayNhan.getValue();
+        LocalDate checkOutDate = ngayTra.getValue();
+
+        if (checkOutDate.isBefore(checkInDate)) {
+            al.showErrorAlert("Ngày trả phòng phải sau ngày nhận phòng.");
+            return null;
+        }
+
+        Booking booking = new Booking(bookingId, customerId, roomId, checkInDate, checkOutDate, "Đã xác nhận");
+        return booking;
+    }
+    @FXML
+    public void datPhong() {
+        Booking booking = layDatPhong();
+        if (booking == null) {
+            return;
+        }
+
+        RoomBookingDao bookingDao = new RoomBookingDao();
+        boolean success = bookingDao.insert(booking);
+
+        if (success) {
+            if (roomDao.updateStatus(booking.getRoomId(), 2)) {
+
+                // Khởi tạo alert thông báo gửi mail
+                Alert sendingAlert = new Alert(Alert.AlertType.INFORMATION);
+                sendingAlert.setTitle("Đang gửi mail...");
+                sendingAlert.setHeaderText(null);
+                sendingAlert.setContentText("Hệ thống đang gửi email... (đã chờ 0 giây)");
+                sendingAlert.getDialogPane().lookupButton(ButtonType.OK).setVisible(false);
+                sendingAlert.show();
+
+                // Biến đếm giây
+                final int[] seconds = {0};
+
+                // Dòng thời gian cập nhật alert mỗi 1 giây
+                Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
+                    seconds[0]++;
+                    sendingAlert.setContentText("Hệ thống đang gửi email... (đã chờ " + seconds[0] + " giây)");
+                }));
+                timeline.setCycleCount(Animation.INDEFINITE); // chạy liên tục
+                timeline.play();
+
+                // Thread gửi mail
+                new Thread(() -> {
+                    try {
+                        MailThongBaoHotel hotel = new MailThongBaoHotel(this.email, booking.getBookingId(), this.soPhong.getText(), this.giaThue.getText());
+
+                        // Gửi thành công
+                        Platform.runLater(() -> {
+                            timeline.stop();      // Dừng đếm
+                            sendingAlert.close(); // Đóng alert
+                            al.showInfoAlert("Đặt phòng thành công và đã gửi mail!");
+                            clearForm();
+                            autoIDRoomBooking();
+                            dataTableRoom();
+                        });
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Platform.runLater(() -> {
+                            timeline.stop();
+                            sendingAlert.close();
+                            al.showErrorAlert("Đặt phòng thành công, nhưng gửi mail thất bại!");
+                            clearForm();
+                            autoIDRoomBooking();
+                            dataTableRoom();
+                        });
+                    }
+                }).start();
+
+            }
+        } else {
+            al.showErrorAlert("Đặt phòng thất bại. Vui lòng thử lại.");
+        }
+    }
+
+    @FXML
+    public void clearForm() {
+        CustomerID.clear();
+        nameCustomer.clear();
+        phone.clear();
+        RoomBookingID.clear();
+        RoomID.clear();
+        giaThue.clear();
+        loaiPhong.getSelectionModel().clearSelection();
+        loaiPhongText.clear();
+        moTa.clear();
+        soGiuong.clear();
+        kichThuocText.clear();
+        soNguoi.clear();
+        soPhong.clear();
+        ngayNhan.setValue(null);
+        ngayTra.setValue(null);
+        tableRoom.getSelectionModel().clearSelection();
+
+        // Load lại danh sách phòng còn trống vào table
+        dataTableRoom();
+    }
+    @FXML
+    public void Servicebutton() throws IOException {
+        AnchorPane ServicePane = FXMLLoader.load(getClass().getResource("/org/FXML/Nhan_Vien/ServiceBooking.fxml"));
+        this.rootPane.getChildren().clear();
+        this.rootPane.getChildren().add(ServicePane);
+    }
     @FXML
     public void initialize(){
         autoIDRoomBooking();
         listLoaiPhong();
         dataTableRoom();
         setCustomerData();
+        // Hoặc dùng sự kiện click chuột
+        soGiuong.setOnMouseClicked(event -> {
+            loaiPhong.getSelectionModel().clearSelection();
+        });
     }
     public String tachMaLoaiPhong(String loaiPhong) {
         switch (loaiPhong) {

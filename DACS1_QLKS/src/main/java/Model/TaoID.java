@@ -1,25 +1,46 @@
 package Model;
 
+import java.util.Random;
+import java.util.Set;
+
 public class TaoID {
-    public  TaoID(){
+    private final Random random = new Random();
+
+    public TaoID() {}
+
+    public String randomIDKH(Set<String> usedIDs) {
+        String id;
+        do {
+            int number = random.nextInt(10000); // 0 - 9999
+            id = String.format("KH%04d", number);
+        } while (usedIDs.contains(id));
+        return id;
     }
-    public String taoIDKH(int number){
-        if(number<0) return "";
-        else if(number<10) return "KH000"+number;
-        else if(number<100) return "KH00"+number;
-        else if(number<1000) return "KH0"+number;
-        else return "KH"+number;
+
+    public String randomIDRoom(Set<String> usedIDs) {
+        String id;
+        do {
+            int number = random.nextInt(10000);
+            id = String.format("P%04d", number);
+        } while (usedIDs.contains(id));
+        return id;
     }
-    public String taoIDRoom(int number){
-        if(number<0) return "";
-        else if(number<10) return "P00"+number;
-        else if(number<100) return "P0"+number;
-        else return "P"+number;
+
+    public String randomIDRoomBooking(Set<String> usedIDs) {
+        String id;
+        do {
+            int number = random.nextInt(10000);
+            id = String.format("RB%04d", number);
+        } while (usedIDs.contains(id));
+        return id;
     }
-    public String taoIDRoomBooking(int number){
-        if(number<0) return "";
-        else if(number<10) return "RB00"+number;
-        else if(number<100) return "RB0"+number;
-        else return "RB"+number;
+    public String randomIDServiceBooking(Set<String> idServiceBooking) {
+        String id;
+        do {
+            int number = random.nextInt(10000);
+            id = String.format("SB%04d", number);
+        } while (idServiceBooking.contains(id));
+        return id;
     }
+
 }
