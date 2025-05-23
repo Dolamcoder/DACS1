@@ -26,10 +26,29 @@ public class HomeEmployeeController {
 
     @FXML
     private Button checkInButton;
+    public void checkin(){
+        try {
+            AnchorPane checkinPane = FXMLLoader.load(getClass().getResource("/org/FXML/Nhan_Vien/Check_in.fxml"));
+            contentPane.getChildren().clear();
+            contentPane.getChildren().add(checkinPane);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Không thể load : " + e.getMessage());
+        }
+    }
 
     @FXML
     private Button checkOutButton;
-
+    public void checkout(){
+        try {
+            AnchorPane checkinPane = FXMLLoader.load(getClass().getResource("/org/FXML/Nhan_Vien/Check_out.fxml"));
+            contentPane.getChildren().clear();
+            contentPane.getChildren().add(checkinPane);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Không thể load : " + e.getMessage());
+        }
+    }
     @FXML
     private Button logoutButton;
     public void logout() throws IOException {

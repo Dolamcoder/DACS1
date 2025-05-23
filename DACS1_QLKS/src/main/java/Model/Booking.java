@@ -1,6 +1,7 @@
 package Model;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Booking {
     private String bookingId;
@@ -9,6 +10,7 @@ public class Booking {
     private LocalDate checkInDate;
     private LocalDate checkOutDate;
     private String status;
+    private LocalDateTime createdAt;
     public Booking(String bookingId, String customerId, String roomId,
                    LocalDate checkInDate, LocalDate checkOutDate, String status) {
         this.bookingId = bookingId;
@@ -66,6 +68,13 @@ public class Booking {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }
 

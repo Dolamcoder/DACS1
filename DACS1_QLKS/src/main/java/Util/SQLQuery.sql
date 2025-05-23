@@ -54,15 +54,6 @@ CREATE TABLE stay_history (
     FOREIGN KEY (customerID) REFERENCES customers(customerID),
     FOREIGN KEY (roomID) REFERENCES room(roomID)
 );
-
--- Tạo bảng customer_status
-CREATE TABLE customer_status (
-    stt INT PRIMARY KEY AUTO_INCREMENT,
-    customerID VARCHAR(10),
-    status VARCHAR(50),
-    FOREIGN KEY (customerID) REFERENCES customers(customerID)
-);
-
 -- Tạo bảng booking
 CREATE TABLE booking (
     bookingID VARCHAR(10) PRIMARY KEY,
@@ -71,7 +62,7 @@ CREATE TABLE booking (
     checkInDate DATE,
     checkOutDate DATE,
     createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-    status VARCHAR(50) CHECK (status IN ('Đã xác nhận', 'Đã hủy', 'Đang ở', 'Hết hạn thanh toán')),
+    status VARCHAR(50) CHECK (status IN ('Đã xác nhận', 'Đã hủy', 'Đang ở', 'Hết hạn thanh toán', 'Đã thanh toán')),
     FOREIGN KEY (roomID) REFERENCES room(roomID),
     FOREIGN KEY (customerID) REFERENCES customers(customerID)
 );

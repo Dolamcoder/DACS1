@@ -60,8 +60,8 @@
                      <Line endX="50.0" layoutX="90.0" layoutY="220.0" startX="-50.0" />
 
                      <Button fx:id="bookRoomButton" layoutX="7.0" layoutY="250.0" onAction="#roomBooking" prefWidth="175.0" styleClass="button_trongsuot" stylesheets="@../../Css/HomeEmployee.css" text="ĐẶT PHÒNG" />
-                     <Button fx:id="checkInButton" layoutX="7.0" layoutY="285.0" prefWidth="175.0" styleClass="button_trongsuot" stylesheets="@../../Css/HomeEmployee.css" text="CHECK - IN" />
-                     <Button fx:id="checkOutButton" layoutX="7.0" layoutY="320.0" prefWidth="175.0" styleClass="button_trongsuot" stylesheets="@../../Css/HomeEmployee.css" text="CHECK - OUT" />
+                     <Button fx:id="checkInButton" layoutX="7.0" layoutY="285.0" onAction="#checkin" prefWidth="175.0" styleClass="button_trongsuot" stylesheets="@../../Css/HomeEmployee.css" text="CHECK - IN" />
+                     <Button fx:id="checkOutButton" layoutX="7.0" layoutY="320.0" onAction="#checkout" prefWidth="175.0" styleClass="button_trongsuot" stylesheets="@../../Css/HomeEmployee.css" text="CHECK - OUT" />
                      <Button fx:id="listBookingButton" layoutX="7.0" layoutY="355.0" prefHeight="22.0" prefWidth="186.0" styleClass="button_trongsuot" stylesheets="@../../Css/HomeEmployee.css" text="DANH SÁCH ĐẶT PHÒNG" />
                      <Button fx:id="listCustomerButton" layoutX="7.0" layoutY="390.0" prefHeight="22.0" prefWidth="189.0" styleClass="button_trongsuot" stylesheets="@../../Css/HomeEmployee.css" text="DANH SÁCH KHÁCH HÀNG" />
                      <Button fx:id="listInvoiceButton" layoutX="7.0" layoutY="425.0" prefWidth="175.0" styleClass="button_trongsuot" stylesheets="@../../Css/HomeEmployee.css" text="DANH SÁCH HOÁ ĐƠN" />

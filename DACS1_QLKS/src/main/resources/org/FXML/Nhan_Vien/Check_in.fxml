@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="541.0" prefWidth="902.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.Employee.CheckinController">
+   <children>
+      <Label layoutX="411.0" layoutY="25.0" text="Check - in" textFill="#205b53">
+         <font>
+            <Font name="System Bold" size="22.0" />
+         </font>
+      </Label>
+      <Line endX="100.0" layoutX="451.0" layoutY="71.0" startX="-100.0" stroke="#2599a1" />
+      <TableView fx:id="table" layoutX="25.0" layoutY="85.0" prefHeight="200.0" prefWidth="855.0">
+        <columns>
+          <TableColumn fx:id="bookingID" prefWidth="88.0" text="BookingID" />
+          <TableColumn fx:id="RoomID" prefWidth="90.0" text="RoomID" />
+            <TableColumn fx:id="CustomerID" prefWidth="109.0" text="CustomerID" />
+            <TableColumn fx:id="CheckinDate" prefWidth="124.0" text="CheckInDate" />
+            <TableColumn fx:id="CheckOutDate" prefWidth="132.0" text="CheckOutDate" />
+            <TableColumn fx:id="CreatedAt" prefWidth="155.0" text="CreatedAt" />
+            <TableColumn fx:id="status" prefWidth="156.0" text="Status" />
+        </columns>
+      </TableView>
+      <Label layoutX="25.0" layoutY="302.0" text="Thông Tin Chi Tiết Của Khách Hàng" textFill="#4049c7">
+         <font>
+            <Font name="System Bold" size="17.0" />
+         </font></Label>
+      <Line endX="-27.0" endY="198.0" layoutX="514.0" layoutY="328.0" startX="-27.0" startY="3.0" />
+      <Label layoutX="25.0" layoutY="343.0" text="Tên Khách Hàng:">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
+      </Label>
+      <TextField fx:id="nameText" layoutX="167.0" layoutY="341.0" prefHeight="25.0" prefWidth="270.0" />
+      <Label layoutX="25.0" layoutY="382.0" prefHeight="17.0" prefWidth="65.0" text="Giới Tính:">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
+      </Label>
+      <RadioButton fx:id="nam" layoutX="167.0" layoutY="382.0" mnemonicParsing="false" text="Nam" />
+      <RadioButton fx:id="nu" layoutX="235.0" layoutY="382.0" mnemonicParsing="false" text="Nữ" />
+      <RadioButton fx:id="khac" layoutX="295.0" layoutY="382.0" mnemonicParsing="false" text="Khác" />
+      <Label layoutX="25.0" layoutY="421.0" text="Ngày Sinh:">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
+      </Label>
+      <DatePicker fx:id="ngaySInh" layoutX="167.0" layoutY="418.0" prefHeight="25.0" prefWidth="270.0" />
+      <Label layoutX="25.0" layoutY="455.0" text="CCCD/CMND:">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
+      </Label>
+      <TextField fx:id="cccd" layoutX="167.0" layoutY="460.0" prefHeight="25.0" prefWidth="270.0" />
+      <Label layoutX="524.0" layoutY="345.0" text="Địa Chỉ:">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
+      </Label>
+      <TextField fx:id="diaChi" layoutX="602.0" layoutY="343.0" prefHeight="25.0" prefWidth="270.0" />
+      <Label layoutX="524.0" layoutY="382.0" text="Email:">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
+      </Label>
+      <TextField fx:id="email" layoutX="602.0" layoutY="380.0" prefHeight="25.0" prefWidth="270.0" promptText="Không bắt buộc với người đi cùng" />
+      <Label layoutX="524.0" layoutY="420.0" text="Phone:">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
+      </Label>
+      <TextField fx:id="phone" layoutX="602.0" layoutY="421.0" prefHeight="25.0" prefWidth="270.0" />
+      <Button fx:id="checkin" layoutX="794.0" layoutY="472.0" mnemonicParsing="false" onAction="#checkIn" stylesheets="@../../Css/RoomBooking.css" text="Check - in" textFill="#3c8897" />
+      <TextField fx:id="timKiemText" layoutX="731.0" layoutY="58.0" />
+      <Button fx:id="addCustomer" layoutX="653.0" layoutY="471.0" mnemonicParsing="false" onAction="#addKhachHang" stylesheets="@../../Css/RoomBooking.css" text="Khách hàng đi cùng" />
+      <ProgressBar fx:id="tienTrinh" layoutX="521.0" layoutY="509.0" prefHeight="18.0" prefWidth="346.0" progress="0.0" />
+      <Label layoutX="25.0" layoutY="492.0" />
+      <Label layoutX="25.0" layoutY="493.0" text="Mã Phòng:">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
+      </Label>
+      <TextField fx:id="idPhongText" layoutX="167.0" layoutY="497.0" prefHeight="25.0" prefWidth="270.0" />
+      <Button fx:id="huyDatPhong" layoutX="535.0" layoutY="471.0" mnemonicParsing="false" onAction="#huyDatPhong" stylesheets="@../../Css/RoomBooking.css" text="Huỷ đặt phòng" />
+   </children>
+</AnchorPane>

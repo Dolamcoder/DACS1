@@ -22,11 +22,13 @@ import java.util.Set;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
+import regex.InputValidator;
 
 public class selectCustomerController {
     ArrayList<Customer> listCustomer;
     CustomerDao cusDao;
     alert al;
+    InputValidator input=new InputValidator();
     public static Customer customer;
     public selectCustomerController() {
         cusDao = new CustomerDao();
@@ -93,6 +95,14 @@ public class selectCustomerController {
         String name = this.nameCustomerText.getText();
         String email = this.emailCustomerText.getText();
         String phone = this.phoneCustomerText.getText();
+        if(input.isValidPhoneNumber(phone)==false){
+            al.showErrorAlert("Số điện thoại không hợp lệ");
+            return;
+        }
+        if(input.isValidEmail(email)==false){
+            al.showErrorAlert("Email không hợp lệ");
+            return;
+        }
         if(name.trim().isEmpty() || email.trim().isEmpty() || phone.trim().isEmpty()){
             al.showErrorAlert("Không để dữ liệu trống");
             return;
@@ -122,6 +132,11 @@ public class selectCustomerController {
     @FXML
     public void handleDatPhong() throws IOException {
         layObject();
+        if(cusDao.searchById(idCustomerText.getText())==null){
+            al.showErrorAlert("Không tìm thấy khách hàng với ID: " + idCustomerText.getText());
+            return;
+        }
+
         AnchorPane roomBookingPane = FXMLLoader.load(getClass().getResource("/org/FXML/Nhan_Vien/RoomBooking.fxml"));
         rootPane.getChildren().clear();
         rootPane.getChildren().add(roomBookingPane);
@@ -190,8 +205,7 @@ public class selectCustomerController {
     @FXML
     public void addButton() {
         layObject();
-        if (customer == null) {
-            al.showErrorAlert("Không để dữ liệu trống");
+        if (customer.getId() == null) {
             return;
         }
         boolean success = cusDao.insertBooking(customer);
