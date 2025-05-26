@@ -15,6 +15,7 @@ module org {
     requires java.mail;
     requires org.apache.poi.ooxml;
     requires itextpdf;
+    requires fontawesomefx;
 
     opens View to javafx.fxml;
     exports View;
@@ -26,4 +27,6 @@ module org {
     exports Model;
     opens Controller.Invoice to javafx.fxml;
     exports Controller.Invoice;
+    opens Controller.Admin to javafx.fxml;
+    exports Controller.Admin;
 }
