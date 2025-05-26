@@ -12,8 +12,9 @@ module org {
     requires com.almasb.fxgl.all;
     requires java.sql;
     requires mysql.connector.j;
-    requires java.desktop;
     requires java.mail;
+    requires org.apache.poi.ooxml;
+    requires itextpdf;
 
     opens View to javafx.fxml;
     exports View;
@@ -23,4 +24,6 @@ module org {
     exports Controller.Login;
     opens Model to javafx.base;
     exports Model;
+    opens Controller.Invoice to javafx.fxml;
+    exports Controller.Invoice;
 }

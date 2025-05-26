@@ -42,5 +42,13 @@ public class TaoID {
         } while (idServiceBooking.contains(id));
         return id;
     }
+    public String randomIDinvoice(Set<String> idinvoice) {
+        String id;
+        do {
+            int number = random.nextInt(10000);
+            id = String.format("IV%04d", number);
+        } while (idinvoice.contains(id));
+        return id;
+    }
 
 }

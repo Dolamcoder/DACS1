@@ -53,6 +53,16 @@ public class StayHistoryDao implements DaoInterface<StayHistory> {
             return false;
         }
     }
+    public boolean deleteByCustomerID(String id) {
+        String sql = "DELETE FROM stay_history WHERE customerID = ?";
+        try (Connection con = JDBC.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, id);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
     @Override
     public ArrayList<StayHistory> selectAll() {

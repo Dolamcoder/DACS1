@@ -1,6 +1,5 @@
 package Controller.Employee;
-import Dao.Employee.RoomDao;
-import Dao.Employee.Type_roomDao;
+import Dao.Employee.*;
 import Mail.MailThongBaoHotel;
 import Model.*;
 import javafx.animation.Animation;
@@ -8,7 +7,6 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
-import Dao.Employee.RoomBookingDao;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
@@ -19,6 +17,7 @@ import javafx.util.Duration;
 
 import java.io.IOException;
 import java.sql.Date;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -30,6 +29,7 @@ public class RoomBookingController {
     Type_roomDao tDao;
     private String email;
     RoomDao roomDao;
+    private  double tongTienPhong=0;
     public RoomBookingController(){
         tDao=new Type_roomDao();
         roomDao=new RoomDao();
@@ -268,70 +268,73 @@ public class RoomBookingController {
         Booking booking = new Booking(bookingId, customerId, roomId, checkInDate, checkOutDate, "Đã xác nhận");
         return booking;
     }
-    @FXML
     public void datPhong() {
         Booking booking = layDatPhong();
         if (booking == null) {
             return;
         }
+        // Tính tổng tiền phòng
+        String priceText = giaThue.getText().replaceAll("[^0-9]", "");
+        double roomPrice = Double.parseDouble(priceText);
+        tongTienPhong = booking.calculateTotalRoomCost(roomPrice);
 
         RoomBookingDao bookingDao = new RoomBookingDao();
         boolean success = bookingDao.insert(booking);
-
         if (success) {
             if (roomDao.updateStatus(booking.getRoomId(), 2)) {
-
-                // Khởi tạo alert thông báo gửi mail
-                Alert sendingAlert = new Alert(Alert.AlertType.INFORMATION);
-                sendingAlert.setTitle("Đang gửi mail...");
-                sendingAlert.setHeaderText(null);
-                sendingAlert.setContentText("Hệ thống đang gửi email... (đã chờ 0 giây)");
-                sendingAlert.getDialogPane().lookupButton(ButtonType.OK).setVisible(false);
-                sendingAlert.show();
-
-                // Biến đếm giây
-                final int[] seconds = {0};
-
-                // Dòng thời gian cập nhật alert mỗi 1 giây
-                Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
-                    seconds[0]++;
-                    sendingAlert.setContentText("Hệ thống đang gửi email... (đã chờ " + seconds[0] + " giây)");
-                }));
-                timeline.setCycleCount(Animation.INDEFINITE); // chạy liên tục
-                timeline.play();
-
-                // Thread gửi mail
-                new Thread(() -> {
-                    try {
-                        MailThongBaoHotel hotel = new MailThongBaoHotel(this.email, booking.getBookingId(), this.soPhong.getText(), this.giaThue.getText());
-
-                        // Gửi thành công
-                        Platform.runLater(() -> {
-                            timeline.stop();      // Dừng đếm
-                            sendingAlert.close(); // Đóng alert
-                            al.showInfoAlert("Đặt phòng thành công và đã gửi mail!");
-                            clearForm();
-                            autoIDRoomBooking();
-                            dataTableRoom();
-                        });
-
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        Platform.runLater(() -> {
-                            timeline.stop();
-                            sendingAlert.close();
-                            al.showErrorAlert("Đặt phòng thành công, nhưng gửi mail thất bại!");
-                            clearForm();
-                            autoIDRoomBooking();
-                            dataTableRoom();
-                        });
-                    }
-                }).start();
-
+                // Gửi mail xác nhận
+                sendBookingConfirmationEmail(booking);
             }
         } else {
             al.showErrorAlert("Đặt phòng thất bại. Vui lòng thử lại.");
         }
+    }
+
+    private void sendBookingConfirmationEmail(Booking booking) {
+        Alert sendingAlert = new Alert(Alert.AlertType.INFORMATION);
+        sendingAlert.setTitle("Đang gửi mail...");
+        sendingAlert.setHeaderText(null);
+        sendingAlert.setContentText("Hệ thống đang gửi email... (đã chờ 0 giây)");
+        sendingAlert.getDialogPane().lookupButton(ButtonType.OK).setVisible(false);
+        sendingAlert.show();
+
+        final int[] seconds = {0};
+        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
+            seconds[0]++;
+            sendingAlert.setContentText("Hệ thống đang gửi email... (đã chờ " + seconds[0] + " giây)");
+        }));
+        timeline.setCycleCount(Animation.INDEFINITE);
+        timeline.play();
+
+        new Thread(() -> {
+            try {
+                MailThongBaoHotel hotel = new MailThongBaoHotel(email, booking.getBookingId(),
+                        soPhong.getText(), giaThue.getText());
+
+                Platform.runLater(() -> {
+                    timeline.stop();
+                    sendingAlert.close();
+                    al.showInfoAlert("Đặt phòng thành công /n" +
+                            "Mã đặt phòng: " + booking.getBookingId() + "\n" +
+                            "Số phòng: " + soPhong.getText() + "\n" +
+                            "Giá thuê: " + giaThue.getText() + "\n" +
+                            "Số Tiền thanh toán " + tongTienPhong *0.5+ " VND\n" + "50% tiền phòng");
+                    clearForm();
+                    autoIDRoomBooking();
+                    dataTableRoom();
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+                Platform.runLater(() -> {
+                    timeline.stop();
+                    sendingAlert.close();
+                    al.showErrorAlert("Đặt phòng thành công, nhưng gửi mail thất bại!");
+                    clearForm();
+                    autoIDRoomBooking();
+                    dataTableRoom();
+                });
+            }
+        }).start();
     }
 
     @FXML

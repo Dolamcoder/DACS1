@@ -23,7 +23,16 @@ public class HomeEmployeeController {
 
     @FXML
     private Button bookRoomButton;
-
+    public void roomBooking() {
+        try {
+            AnchorPane datPhongPane = FXMLLoader.load(getClass().getResource("/org/FXML/Nhan_Vien/RoomBooking.fxml"));
+            contentPane.getChildren().clear();
+            contentPane.getChildren().add(datPhongPane);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Không thể load RoomBooking.fxml: " + e.getMessage());
+        }
+    }
     @FXML
     private Button checkInButton;
     public void checkin(){
@@ -33,10 +42,9 @@ public class HomeEmployeeController {
             contentPane.getChildren().add(checkinPane);
         } catch (IOException e) {
             e.printStackTrace();
-            System.err.println("Không thể load : " + e.getMessage());
+            System.err.println("Không thể lo   ad : " + e.getMessage());
         }
     }
-
     @FXML
     private Button checkOutButton;
     public void checkout(){
@@ -76,9 +84,9 @@ public class HomeEmployeeController {
     }
     @FXML
     private Button listBookingButton;
-    public void roomBooking() {
+    public void listroomBooking() {
         try {
-            AnchorPane datPhongPane = FXMLLoader.load(getClass().getResource("/org/FXML/Nhan_Vien/RoomBooking.fxml"));
+            AnchorPane datPhongPane = FXMLLoader.load(getClass().getResource("/org/FXML/Nhan_Vien/listRoomBooking.fxml"));
             contentPane.getChildren().clear();
             contentPane.getChildren().add(datPhongPane);
         } catch (IOException e) {
@@ -89,7 +97,16 @@ public class HomeEmployeeController {
 
     @FXML
     private Button listCustomerButton;
-
+    public void listCustomer() {
+        try {
+            AnchorPane datPhongPane = FXMLLoader.load(getClass().getResource("/org/FXML/Nhan_Vien/ListCustomer.fxml"));
+            contentPane.getChildren().clear();
+            contentPane.getChildren().add(datPhongPane);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Không thể load: " + e.getMessage());
+        }
+    }
     @FXML
     private Button listInvoiceButton;
 

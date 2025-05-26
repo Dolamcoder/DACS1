@@ -1,99 +1,61 @@
 package Model;
-
-import java.time.LocalDate;
-import java.util.List;
+import java.sql.Date;
 
 public class Invoice {
-    private String invoiceId;
-    private String bookingId;
-    private String customerId;
+    private String invoiceID;
+    private String bookingID;
     private double totalAmount;
-    private String bookingServiceID;
-    private List<Service> servicesUsed;
-    private LocalDate issueDate;
-    private String status; // Paid, Unpaid
+    private double tax;
+    private double discount;
+    private Date issueDate;
+    private String status; // "Đã thanh toán", "Chưa thanh toán", "Hủy"
+    private String serviceBookingID; // ID của dịch vụ đi kèm nếu có
+    public Invoice() {}
 
-    // Constructor
-    public Invoice(String invoiceId, String bookingId, String customerId,
-                   List<Service> servicesUsed, LocalDate issueDate, String status) {
-        this.invoiceId = invoiceId;
-        this.bookingId = bookingId;
-        this.customerId = customerId;
-        this.servicesUsed = servicesUsed;
+    public Invoice(String invoiceID, String bookingID, double totalAmount, double tax, double discount, Date issueDate, String status) {
+        this.invoiceID = invoiceID;
+        this.bookingID = bookingID;
+        this.totalAmount = totalAmount;
+        this.tax = tax;
+        this.discount = discount;
         this.issueDate = issueDate;
         this.status = status;
-        this.totalAmount = calculateTotalAmount(); // Tự động tính tổng tiền
     }
+    // Getter - Setter
+    public String getInvoiceID() { return invoiceID; }
+    public void setInvoiceID(String invoiceID) { this.invoiceID = invoiceID; }
 
-    public String getBookingServiceID() {
-        return bookingServiceID;
+    public String getBookingID() { return bookingID; }
+    public void setBookingID(String bookingID) { this.bookingID = bookingID; }
+
+    public double getTotalAmount() { return totalAmount; }
+    public void setTotalAmount(double totalAmount) { this.totalAmount = totalAmount; }
+
+    public double getTax() { return tax; }
+    public void setTax(double tax) { this.tax = tax; }
+
+    public double getDiscount() { return discount; }
+    public void setDiscount(double discount) { this.discount = discount; }
+
+    public Date getIssueDate() { return issueDate; }
+    public void setIssueDate(Date issueDate) { this.issueDate = issueDate; }
+
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+    public String getServiceBookingID() { return serviceBookingID; }
+    public void setServiceBookingID(String serviceBookingID) { this.serviceBookingID = serviceBookingID;}
+
+    @Override
+    public String toString() {
+        return "Invoice{" +
+                "invoiceID='" + invoiceID + '\'' +
+                ", bookingID='" + bookingID + '\'' +
+                ", totalAmount=" + totalAmount +
+                ", tax=" + tax +
+                ", discount=" + discount +
+                ", issueDate=" + issueDate +
+                ", status='" + status + '\'' +
+                ", serviceBookingID='" + serviceBookingID + '\'' +
+                '}';
     }
-
-    public void setBookingServiceID(String bookingServiceID) {
-        this.bookingServiceID = bookingServiceID;
-    }
-
-    // Tính tổng số tiền dựa trên danh sách dịch vụ
-    private double calculateTotalAmount() {
-        double sum = 0;
-        for (Service service : servicesUsed) {
-            sum += service.getPrice();
-        }
-        return sum;
-    }
-
-    // Getter và Setter
-    public String getInvoiceId() {
-        return invoiceId;
-    }
-
-    public void setInvoiceId(String invoiceId) {
-        this.invoiceId = invoiceId;
-    }
-
-    public String getBookingId() {
-        return bookingId;
-    }
-
-    public void setBookingId(String bookingId) {
-        this.bookingId = bookingId;
-    }
-
-    public String getCustomerId() {
-        return customerId;
-    }
-
-    public void setCustomerId(String customerId) {
-        this.customerId = customerId;
-    }
-
-    public double getTotalAmount() {
-        return totalAmount;
-    }
-
-    public List<Service> getServicesUsed() {
-        return servicesUsed;
-    }
-
-    public void setServicesUsed(List<Service> servicesUsed) {
-        this.servicesUsed = servicesUsed;
-        this.totalAmount = calculateTotalAmount(); // Cập nhật lại tổng tiền
-    }
-
-    public LocalDate getIssueDate() {
-        return issueDate;
-    }
-
-    public void setIssueDate(LocalDate issueDate) {
-        this.issueDate = issueDate;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
 }

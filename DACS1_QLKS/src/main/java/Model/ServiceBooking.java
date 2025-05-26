@@ -2,7 +2,7 @@ package Model;
 
 public class ServiceBooking {
     private String serviceBookingID;
-    private String customerID;
+    private String roomID;
     private int quantity;
     private double totalAmount;
 
@@ -10,9 +10,9 @@ public class ServiceBooking {
     public ServiceBooking() {}
 
     // Constructor có tham số
-    public ServiceBooking(String serviceBookingID, String customerID, int quantity, double totalAmount) {
+    public ServiceBooking(String serviceBookingID, String roomID, int quantity, double totalAmount) {
         this.serviceBookingID = serviceBookingID;
-        this.customerID = customerID;
+        this.roomID = roomID;
         this.quantity = quantity;
         this.totalAmount = totalAmount;
     }
@@ -26,12 +26,12 @@ public class ServiceBooking {
         this.serviceBookingID = serviceBookingID;
     }
 
-    public String getCustomerID() {
-        return customerID;
+    public String getRoomID() {
+        return roomID;
     }
 
-    public void setCustomerID(String customerID) {
-        this.customerID = customerID;
+    public void setRoomID(String roomID) {
+        this.roomID = roomID;
     }
 
     public int getQuantity() {
@@ -54,7 +54,7 @@ public class ServiceBooking {
     public String toString() {
         return "ServiceBooking{" +
                 "serviceBookingID='" + serviceBookingID + '\'' +
-                ", customerID='" + customerID + '\'' +
+                ", customerID='" + roomID + '\'' +
                 ", quantity=" + quantity +
                 ", totalAmount=" + totalAmount +
                 '}';

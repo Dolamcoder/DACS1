@@ -43,7 +43,15 @@
     -fx-font-size: 13px;
     -fx-font-family: "Segoe UI", sans-serif;
 }
+.table-view {
+    -fx-table-cell-border-color: #cccccc;
+    -fx-grid-lines-visible: true;
+}
 
+.table-row-cell {
+    -fx-border-width: 0 0 1 0;
+    -fx-border-color: #e0e0e0;
+}
 /* === Tiêu đề cột === */
 /* === TableView Container === */
 .table-view {

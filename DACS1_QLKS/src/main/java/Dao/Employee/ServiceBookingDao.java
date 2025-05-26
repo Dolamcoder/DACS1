@@ -14,10 +14,10 @@ public class ServiceBookingDao implements DaoInterface<ServiceBooking> {
     @Override
     public boolean insert(ServiceBooking obj) {
         connection= JDBC.getConnection();
-        String sql = "INSERT INTO servicebooking(serviceBookingID, customerID, quantity, totalAmount) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO servicebooking(serviceBookingID, roomID, quantity, totalAmount) VALUES (?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, obj.getServiceBookingID());
-            stmt.setString(2, obj.getCustomerID());
+            stmt.setString(2, obj.getRoomID());
             stmt.setInt(3, obj.getQuantity());
             stmt.setDouble(4, obj.getTotalAmount());
             int ans= stmt.executeUpdate();
@@ -32,9 +32,9 @@ public class ServiceBookingDao implements DaoInterface<ServiceBooking> {
     @Override
     public boolean update(ServiceBooking obj) {
         connection=JDBC.getConnection();
-        String sql = "UPDATE servicebooking SET customerID = ?, quantity = ?, totalAmount = ? WHERE serviceBookingID = ?";
+        String sql = "UPDATE servicebooking SET roomID = ?, quantity = ?, totalAmount = ? WHERE serviceBookingID = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, obj.getCustomerID());
+            stmt.setString(1, obj.getRoomID());
             stmt.setInt(2, obj.getQuantity());
             stmt.setDouble(3, obj.getTotalAmount());
             stmt.setString(4, obj.getServiceBookingID());
@@ -71,7 +71,7 @@ public class ServiceBookingDao implements DaoInterface<ServiceBooking> {
             if (rs.next()) {
                 return new ServiceBooking(
                         rs.getString("serviceBookingID"),
-                        rs.getString("customerID"),
+                        rs.getString("roomID"),
                         rs.getInt("quantity"),
                         rs.getDouble("totalAmount")
                 );
@@ -92,7 +92,7 @@ public class ServiceBookingDao implements DaoInterface<ServiceBooking> {
             while (rs.next()) {
                 ServiceBooking sb = new ServiceBooking(
                         rs.getString("serviceBookingID"),
-                        rs.getString("customerID"),
+                        rs.getString("roomID"),
                         rs.getInt("quantity"),
                         rs.getDouble("totalAmount")
                 );
@@ -103,5 +103,42 @@ public class ServiceBookingDao implements DaoInterface<ServiceBooking> {
             e.printStackTrace();
         }
         return list;
+    }
+    public String  getByRoomId(String roomId) {
+        connection = JDBC.getConnection();
+        String sql = "SELECT serviceBookingID FROM servicebooking WHERE roomID = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, roomId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                String serviceBookingID = rs.getString("serviceBookingID");
+                connection.close();
+                return serviceBookingID;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+   public ServiceBooking searchById(String serviceBookingId) {
+        connection = JDBC.getConnection();
+        String sql = "SELECT * FROM servicebooking WHERE  serviceBookingID = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, serviceBookingId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                ServiceBooking sb = new ServiceBooking(
+                        rs.getString("serviceBookingID"),
+                        rs.getString("roomID"),
+                        rs.getInt("quantity"),
+                        rs.getDouble("totalAmount")
+                );
+                connection.close();
+                return sb;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

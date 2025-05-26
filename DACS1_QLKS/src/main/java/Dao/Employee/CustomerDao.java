@@ -31,7 +31,6 @@ public class CustomerDao implements DaoInterface<Customer> {
             return false;
         }
     }
-
     @Override
     public boolean update(Customer customer) {
         String sql = "UPDATE customers SET name = ?, gender = ?, birthDate = ?, idNumber = ?, address = ?, email = ?, phone = ?, status = ? WHERE customerID = ?";
@@ -53,21 +52,39 @@ public class CustomerDao implements DaoInterface<Customer> {
             return false;
         }
     }
-
-    @Override
-    public boolean delete(String id) {
-        String sql = "DELETE FROM customers WHERE customerID = ?";
+    public boolean update2(Customer customer) {
+        String sql = "UPDATE customers SET name = ?, gender = ?, birthDate = ?, idNumber = ?, address = ?, email = ?, phone = ?, status = ? WHERE customerID = ?";
         try (Connection con = JDBC.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, id);
-            con.close();
+            ps.setString(1, customer.getName());
+            ps.setString(2, customer.getGender());
+            ps.setDate(3, customer.getBirth() != null ? Date.valueOf(customer.getBirth()) : null);
+            ps.setString(4, customer.getIdNumber());
+            ps.setString(5, customer.getDiaChi());
+            ps.setString(6, customer.getEmail());
+            ps.setString(7, customer.getPhone());
+            ps.setString(8, customer.getStatus());
+            ps.setString(9, customer.getId());
             int rowsAffected = ps.executeUpdate();
+            con.close();
             return rowsAffected > 0;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
     }
-
+    @Override
+    public boolean delete(String id) {
+        String sql = "DELETE FROM customers WHERE customerID = ?";
+        try (Connection con = JDBC.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, id);
+            int rowsAffected = ps.executeUpdate();
+            con.close();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
     @Override
     public ArrayList<Customer> selectAll() {
         ArrayList<Customer> customers = new ArrayList<>();
@@ -146,6 +163,7 @@ public class CustomerDao implements DaoInterface<Customer> {
         }
         return null;
     }
+
     public Set<String> getAllCustomerIDs() {
         Set<String> ids = new HashSet<>();
         String sql = "SELECT customerId FROM customers";
@@ -160,6 +178,7 @@ public class CustomerDao implements DaoInterface<Customer> {
         }
         return ids;
     }
+
     public boolean insertWithoutEmail(Customer customer) {
         String sql = "INSERT INTO customers (customerID, name, gender, birthDate, idNumber, address, phone, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection con = JDBC.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
@@ -179,4 +198,30 @@ public class CustomerDao implements DaoInterface<Customer> {
         }
     }
 
+    public boolean updateCustomerStatus(String customerID, String status) {
+        String query = "UPDATE customers SET status = ? WHERE customerID= ?";
+        try (Connection con = JDBC.getConnection(); PreparedStatement stmt = con.prepareStatement(query)) {
+            stmt.setString(1, status);
+            stmt.setString(2, customerID);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public String getNameById(String id) {
+        String sql = "SELECT name FROM customers WHERE customerID = ?";
+        try (Connection con = JDBC.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("name");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

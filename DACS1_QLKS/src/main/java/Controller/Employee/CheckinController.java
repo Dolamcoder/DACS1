@@ -2,7 +2,6 @@
 
     import Dao.Employee.*;
     import Model.*;
-    import encryption.maHoaMatKhau;
     import javafx.collections.FXCollections;
     import javafx.collections.ObservableList;
     import javafx.concurrent.Task;
@@ -172,14 +171,11 @@
                 return null;
             }
 
-            String cccd = this.cccd.getText();
-            maHoaMatKhau maHoa = new maHoaMatKhau();
-            cccd = maHoa.hashPassword(cccd);
             Customer customer = new Customer();
             customer.setName(nameText.getText());
             customer.setEmail(email.getText());
             customer.setPhone(phone.getText());
-            customer.setIdNumber(cccd);
+            customer.setIdNumber(cccd.getText());
             customer.setDiaChi(diaChi.getText());
             customer.setBirth(ngaySInh.getValue());
 
@@ -202,8 +198,6 @@
             }
 
             String cccd = this.cccd.getText();
-            maHoaMatKhau maHoa = new maHoaMatKhau();
-            cccd = maHoa.hashPassword(cccd);
             Customer customer = new Customer();
             customer.setName(nameText.getText());
             customer.setPhone(phone.getText());

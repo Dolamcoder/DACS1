@@ -1,0 +1,66 @@
+.root {
+    -fx-background-color: #f4f4f9;
+}
+
+.main-container {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #d3d3d3;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 5);
+}
+
+.header-label {
+    -fx-text-fill: #2a4d69;
+    -fx-font-weight: bold;
+}
+
+.info-grid .info-label {
+    -fx-text-fill: #4b6584;
+    -fx-font-size: 14px;
+}
+
+.info-grid .info-value {
+    -fx-text-fill: #333333;
+    -fx-font-size: 14px;
+}
+
+.section-label {
+    -fx-text-fill: #2a4d69;
+    -fx-font-weight: bold;
+}
+
+.service-table {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #d3d3d3;
+}
+
+.service-table .column-header {
+    -fx-background-color: #e8ecef;
+    -fx-text-fill: #2a4d69;
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+}
+
+.service-table .table-cell {
+    -fx-alignment: center;
+    -fx-text-fill: #333333;
+}
+
+.summary-grid .summary-label {
+    -fx-text-fill: #4b6584;
+    -fx-font-size: 14px;
+}
+
+.summary-grid .summary-value {
+    -fx-text-fill: #333333;
+    -fx-font-size: 14px;
+    -fx-alignment: center-right;
+}
+
+.summary-grid .summary-value-bold {
+    -fx-text-fill: #2a4d69;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-alignment: center-right;
+}

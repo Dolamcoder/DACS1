@@ -89,13 +89,13 @@ public class ServiceDao implements DaoInterface<Service> {
         }
         return list;
     }
-    public Service selectById(String id) {
+    public Service selectById(int  id) {
         Service s = null;
         try {
             Connection con = JDBC.getConnection();
             String sql = "SELECT * FROM service WHERE serviceID=?";
             PreparedStatement pst = con.prepareStatement(sql);
-            pst.setString(1, id);
+            pst.setInt(1, id);
             ResultSet rs = pst.executeQuery();
 
             if (rs.next()) {

@@ -1,7 +1,13 @@
 package encryption;
 
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
 import java.security.MessageDigest;
+import java.util.Base64;
+
 public class maHoaMatKhau {
+    private static final String SECRET_KEY = "MySecretKey12345"; // For demo only, use a secure key in production
+
     public String hashPassword(String password) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");

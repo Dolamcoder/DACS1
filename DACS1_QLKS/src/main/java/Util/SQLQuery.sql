@@ -1,8 +1,4 @@
--- Tạo database với encoding utf8mb4
-CREATE DATABASE hotel_management CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE hotel_management;
 
--- Tạo bảng room_type
 CREATE TABLE room_type (
     loaiPhong CHAR(2) PRIMARY KEY,
     tenLoaiPhong VARCHAR(50) NOT NULL,
@@ -31,7 +27,8 @@ CREATE TABLE customers (
     idNumber VARCHAR(20),
     address TEXT,
     email VARCHAR(100),
-    phone VARCHAR(20)
+    phone VARCHAR(20),
+    status varchar(40)
 );
 
 -- Tạo bảng card_levels
@@ -39,10 +36,10 @@ CREATE TABLE card_levels (
     stt INT PRIMARY KEY AUTO_INCREMENT,
     customerID VARCHAR(10),
     levelName VARCHAR(50),
+    totalAmount double,
     description TEXT,
     FOREIGN KEY (customerID) REFERENCES customers(customerID)
 );
-
 -- Tạo bảng stay_history
 CREATE TABLE stay_history (
     stt INT PRIMARY KEY AUTO_INCREMENT,
@@ -69,7 +66,7 @@ CREATE TABLE booking (
 
 -- Tạo bảng account
 CREATE TABLE account (
-    stt INT AUTO_INCREMENT,
+    stt INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50),
     password VARCHAR(255),
     name VARCHAR(100),
@@ -130,10 +127,10 @@ CREATE TABLE service (
 -- Tạo bảng servicebooking
 CREATE TABLE servicebooking (
     serviceBookingID VARCHAR(10) PRIMARY KEY,
-    customerID VARCHAR(10),
+    roomID VARCHAR(10),
     quantity INT,
-    totalAmount decimal(10,2);
-    FOREIGN KEY (customerID) REFERENCES customers(customerID)
+    totalAmount decimal(10,2),
+    FOREIGN KEY (roomID) REFERENCES room(roomID)
 );
 CREATE TABLE ServiceBookingDetail (
   	stt INT AUTO_INCREMENT PRIMARY KEY,  	 -- STT tự động tăng
@@ -147,28 +144,15 @@ CREATE TABLE ServiceBookingDetail (
 CREATE TABLE invoice (
     invoiceID VARCHAR(10) PRIMARY KEY,
     bookingID VARCHAR(10),
-    customerID VARCHAR(10),
+    ServiceBookingID VARCHAR(10),
     totalAmount DOUBLE,
     tax DOUBLE DEFAULT 0,
     discount DOUBLE DEFAULT 0,
     issueDate DATE,
-    status VARCHAR(50) CHECK (status IN ('Đã thanh toán', 'Chưa thanh toán', 'Hủy')),
+    status varchar(50),
     FOREIGN KEY (bookingID) REFERENCES booking(bookingID),
-    FOREIGN KEY (customerID) REFERENCES customers(customerID)
+    FOREIGN KEY (ServiceBookingID) REFERENCES ServiceBooking(ServiceBookingID)
 );
-
--- Tạo bảng invoice_detail
-CREATE TABLE invoice_detail (
-    detailID INT PRIMARY KEY AUTO_INCREMENT,
-    invoiceID VARCHAR(10),
-    bookingID VARCHAR(10),
-    serviceBookingID VARCHAR(10),
-    amount DOUBLE,
-    FOREIGN KEY (invoiceID) REFERENCES invoice(invoiceID),
-    FOREIGN KEY (bookingID) REFERENCES booking(bookingID),
-    FOREIGN KEY (serviceBookingID) REFERENCES servicebooking(serviceBookingID)
-);
-
 -- Tạo bảng audit_log
 CREATE TABLE audit_log (
     logID INT PRIMARY KEY AUTO_INCREMENT,
@@ -179,7 +163,6 @@ CREATE TABLE audit_log (
     actionAt DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 -- bản ghi
---room_type
 INSERT INTO room_type (loaiPhong, tenLoaiPhong, soGiuong, sucChua, kichThuoc, moTa) VALUES
 ('DB', 'Double Bed', 1, 2, 25.0, 'Phòng có một giường đôi, thích hợp cho 2 người lớn.'),
 ('TW', 'Twin Bed', 2, 2, 26.0, 'Phòng có hai giường đơn, phù hợp cho bạn bè hoặc đồng nghiệp.'),
@@ -196,9 +179,8 @@ INSERT INTO room_type (loaiPhong, tenLoaiPhong, soGiuong, sucChua, kichThuoc, mo
 ('RK', 'Royal King', 1, 2, 60.0, 'Phòng Royal King cực kỳ sang trọng với phòng tắm VIP.'),
 ('BS', 'Business Room', 1, 2, 28.0, 'Phòng Business thiết kế cho khách đi công tác.'),
 ('OC', 'Ocean View', 1, 2, 34.0, 'Phòng hướng biển với ban công lớn và view đẹp.'),
-('GD', 'Garden View', 1, 2, 33.0, 'Phòng hướng vườn xanh mát, không gian yên tĩnh.'); ( xem dữ liệu nào trùng k
---room
-INSERT INTO room (id, number, loaiPhong, price, status) VALUES
+('GD', 'Garden View', 1, 2, 33.0, 'Phòng hướng vườn xanh mát, không gian yên tĩnh.'); 
+INSERT INTO room (roomID, number, loaiPhong, price, status) VALUES
 ('P001', 101, 'DB', 600000, 1),
 ('P002', 102, 'TW', 650000, 1),
 ('P003', 103, 'ST', 500000, 1),

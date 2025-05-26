@@ -2,6 +2,7 @@ package Model;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 public class Booking {
     private String bookingId;
@@ -75,6 +76,20 @@ public class Booking {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+    public double calculateTotalRoomCost(double roomPrice) {
+        if (checkInDate == null || checkOutDate == null) {
+            return 0;
+        }
+
+        long numberOfDays = ChronoUnit.DAYS.between(checkInDate, checkOutDate);
+        return roomPrice * (numberOfDays > 0 ? numberOfDays : 1); // Ensure at least 1 day
+    }
+    public int getNumberOfDays(){
+        if (checkInDate == null || checkOutDate == null) {
+            return 0;
+        }
+        return (int) ChronoUnit.DAYS.between(checkInDate, checkOutDate);
     }
 }
 

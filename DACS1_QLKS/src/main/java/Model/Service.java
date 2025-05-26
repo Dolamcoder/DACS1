@@ -1,5 +1,7 @@
 package Model;
 
+import java.time.chrono.IsoEra;
+
 public class Service {
     private int serviceId;
     private String name;
@@ -12,7 +14,13 @@ public class Service {
         this.price = price;
         this.description = description;
     }
+    public Service(){
 
+    }
+    public Service(String name, double price) {
+       this.name=name;
+       this.price=price;
+    }
     // Getter và Setter
     public int  getServiceId() {
         return serviceId;

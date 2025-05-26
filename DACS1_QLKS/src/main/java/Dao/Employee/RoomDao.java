@@ -133,7 +133,6 @@ public class RoomDao implements DaoInterface<Room> {
             PreparedStatement pstm = con.prepareStatement(query);
             pstm.setInt(1, newStatus);
             pstm.setString(2, roomId);
-
             int rowsAffected = pstm.executeUpdate();
             con.close();
             return rowsAffected > 0;
@@ -141,5 +140,22 @@ public class RoomDao implements DaoInterface<Room> {
             e.printStackTrace();
             return false;
         }
+    }
+    public double getPriceById(String roomId) {
+        con = JDBC.getConnection();
+        String query = "SELECT price FROM room WHERE roomID = ?";
+        try {
+            PreparedStatement pstm = con.prepareStatement(query);
+            pstm.setString(1, roomId);
+            ResultSet rs = pstm.executeQuery();
+            if (rs.next()) {
+                double price = rs.getDouble("price");
+                con.close();
+                return price;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 }
