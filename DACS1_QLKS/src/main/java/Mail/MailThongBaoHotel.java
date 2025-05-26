@@ -11,8 +11,8 @@ public class MailThongBaoHotel {
     private String maDatPhong;
     private String soPhong;
     private String giaPhong;
-
-    public MailThongBaoHotel(String to, String maDatPhong, String soPhong, String giaPhong) {
+    private String text;
+    public MailThongBaoHotel(String to, String maDatPhong, String soPhong, String giaPhong, String text) {
         this.to = to;
         this.maDatPhong = maDatPhong;
         this.soPhong = soPhong;
@@ -47,6 +47,7 @@ public class MailThongBaoHotel {
                             "🆔 Mã đặt phòng: " + maDatPhong + "\n" +
                             "🚪 Số phòng: " + soPhong + "\n" +
                             "💰 Giá phòng: " + giaPhong + " \n" +
+                            text + "\n\n" +
                             "Vui lòng đến khu vực Check-in để hoàn tất quá trình nhận phòng.\n" +
                             "Xin cảm ơn quý khách đã sử dụng dịch vụ của chúng tôi.";
 

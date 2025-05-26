@@ -99,9 +99,9 @@ public class HomeEmployeeController {
     private Button listCustomerButton;
     public void listCustomer() {
         try {
-            AnchorPane datPhongPane = FXMLLoader.load(getClass().getResource("/org/FXML/Nhan_Vien/ListCustomer.fxml"));
+            AnchorPane listCustomer= FXMLLoader.load(getClass().getResource("/org/FXML/Nhan_Vien/ListCustomer.fxml"));
             contentPane.getChildren().clear();
-            contentPane.getChildren().add(datPhongPane);
+            contentPane.getChildren().add(listCustomer);
         } catch (IOException e) {
             e.printStackTrace();
             System.err.println("Không thể load: " + e.getMessage());
@@ -109,7 +109,16 @@ public class HomeEmployeeController {
     }
     @FXML
     private Button listInvoiceButton;
-
+    public void listInvoice(){
+        try {
+            AnchorPane listInvocie= FXMLLoader.load(getClass().getResource("/org/FXML/Nhan_Vien/listInvocie.fxml"));
+            contentPane.getChildren().clear();
+            contentPane.getChildren().add(listInvocie);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Không thể load: " + e.getMessage());
+        }
+    }
     @FXML
     private Label nameLabel;
     public void setNameLabel(){
@@ -143,6 +152,38 @@ public class HomeEmployeeController {
                 // Lấy controller và cập nhật dữ liệu
                 RoomPaneController controller = loader.getController();
                 controller.setRoomData(room);
+
+                // Áp dụng màu sắc khác nhau dựa trên trạng thái phòng
+                String color;
+                switch (room.status) {
+                    case 1: // Phòng trống - màu xanh lá
+                        color = "-fx-background-color: #7bed9f;";
+                        break;
+                    case 2: // Phòng đã đặt - màu vàng
+                        color = "-fx-background-color: #ffda79;";
+                        break;
+                    case 3: // Phòng đang sử dụng - màu đỏ nhạt
+                        color = "-fx-background-color: #ff7979;";
+                        break;
+                    case 4: // Phòng đang dọn dẹp - màu xanh dương
+                        color = "-fx-background-color: #74b9ff;";
+                        break;
+                    default: // Trạng thái khác - màu xám
+                        color = "-fx-background-color: #a5b1c2;";
+                }
+
+                // Áp dụng màu nền cho phòng
+                roomPane.setStyle(color);
+
+                // Thêm hover effect
+                roomPane.setOnMouseEntered(e -> {
+                    roomPane.setStyle(color + "-fx-opacity: 0.8;");
+                    roomPane.setCursor(javafx.scene.Cursor.HAND);
+                });
+
+                roomPane.setOnMouseExited(e -> {
+                    roomPane.setStyle(color);
+                });
 
                 // Thêm ô phòng vào FlowPane
                 this.flowPane.getChildren().add(roomPane);

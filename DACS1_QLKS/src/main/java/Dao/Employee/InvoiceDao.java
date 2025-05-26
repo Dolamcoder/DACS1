@@ -14,7 +14,7 @@ public class InvoiceDao {
     }
     // Create - Insert
     public boolean insert(Invoice invoice){
-        String sql = "INSERT INTO invoice (invoiceID, bookingID, ServiceBookingID, totalAmount, tax, discount, issueDate, status) " +
+        String sql = "INSERT INTO invoice (invoiceID, bookingID, ServiceBookingID, totalAmount, tax, amount, issueDate, status) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, invoice.getInvoiceID());
@@ -22,7 +22,7 @@ public class InvoiceDao {
             stmt.setString(3, invoice.getServiceBookingID());
             stmt.setDouble(4, invoice.getTotalAmount());
             stmt.setDouble(5, invoice.getTax());
-            stmt.setDouble(6, invoice.getDiscount());
+            stmt.setDouble(6, invoice.getAmount());
             stmt.setDate(7, invoice.getIssueDate());
             stmt.setString(8, invoice.getStatus());
             return stmt.executeUpdate() > 0;
@@ -66,12 +66,12 @@ public class InvoiceDao {
 
     // Update
     public boolean update(Invoice invoice){
-        String sql = "UPDATE invoice SET bookingID=?,  totalAmount=?, tax=?, discount=?, issueDate=?, status=?, serviceBookingID = ? WHERE invoiceID=?";
+        String sql = "UPDATE invoice SET bookingID=?,  totalAmount=?, tax=?, amount=?, issueDate=?, status=?, serviceBookingID = ? WHERE invoiceID=?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, invoice.getBookingID());
             stmt.setDouble(2, invoice.getTotalAmount());
             stmt.setDouble(3, invoice.getTax());
-            stmt.setDouble(4, invoice.getDiscount());
+            stmt.setDouble(4, invoice.getAmount());
             stmt.setDate(5, invoice.getIssueDate());
             stmt.setString(6, invoice.getStatus());
             stmt.setString(7, invoice.getServiceBookingID());
@@ -133,7 +133,7 @@ public class InvoiceDao {
         invoice.setServiceBookingID(rs.getString("serviceBookingID"));
         invoice.setTotalAmount(rs.getDouble("totalAmount"));
         invoice.setTax(rs.getDouble("tax"));
-        invoice.setDiscount(rs.getDouble("discount"));
+        invoice.setAmount(rs.getDouble("amount"));
         invoice.setIssueDate(rs.getDate("issueDate"));
         invoice.setStatus(rs.getString("status"));
         return invoice;

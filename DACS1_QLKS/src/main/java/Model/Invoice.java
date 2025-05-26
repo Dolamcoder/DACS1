@@ -6,18 +6,18 @@ public class Invoice {
     private String bookingID;
     private double totalAmount;
     private double tax;
-    private double discount;
+    private double amount;
     private Date issueDate;
     private String status; // "Đã thanh toán", "Chưa thanh toán", "Hủy"
     private String serviceBookingID; // ID của dịch vụ đi kèm nếu có
     public Invoice() {}
 
-    public Invoice(String invoiceID, String bookingID, double totalAmount, double tax, double discount, Date issueDate, String status) {
+    public Invoice(String invoiceID, String bookingID, double totalAmount, double tax, double amount, Date issueDate, String status) {
         this.invoiceID = invoiceID;
         this.bookingID = bookingID;
         this.totalAmount = totalAmount;
         this.tax = tax;
-        this.discount = discount;
+        this.amount = amount;
         this.issueDate = issueDate;
         this.status = status;
     }
@@ -34,8 +34,8 @@ public class Invoice {
     public double getTax() { return tax; }
     public void setTax(double tax) { this.tax = tax; }
 
-    public double getDiscount() { return discount; }
-    public void setDiscount(double discount) { this.discount = discount; }
+    public double getAmount() { return amount; }
+    public void setAmount(double discount) { this.amount= discount; }
 
     public Date getIssueDate() { return issueDate; }
     public void setIssueDate(Date issueDate) { this.issueDate = issueDate; }
@@ -52,7 +52,7 @@ public class Invoice {
                 ", bookingID='" + bookingID + '\'' +
                 ", totalAmount=" + totalAmount +
                 ", tax=" + tax +
-                ", discount=" + discount +
+                ", discount=" + amount+
                 ", issueDate=" + issueDate +
                 ", status='" + status + '\'' +
                 ", serviceBookingID='" + serviceBookingID + '\'' +

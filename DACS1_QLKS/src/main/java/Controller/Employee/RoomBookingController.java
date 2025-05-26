@@ -297,7 +297,6 @@ public class RoomBookingController {
         sendingAlert.setContentText("Hệ thống đang gửi email... (đã chờ 0 giây)");
         sendingAlert.getDialogPane().lookupButton(ButtonType.OK).setVisible(false);
         sendingAlert.show();
-
         final int[] seconds = {0};
         Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
             seconds[0]++;
@@ -309,7 +308,7 @@ public class RoomBookingController {
         new Thread(() -> {
             try {
                 MailThongBaoHotel hotel = new MailThongBaoHotel(email, booking.getBookingId(),
-                        soPhong.getText(), giaThue.getText());
+                        soPhong.getText(), giaThue.getText(), "Quý khách đã thanh toán 50% tiền phòng");
 
                 Platform.runLater(() -> {
                     timeline.stop();

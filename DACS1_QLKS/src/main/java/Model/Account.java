@@ -8,6 +8,8 @@ public class Account {
     private String email;
     private String name;
     private int role; // 0: Khách hàng, 1: Nhân viên, 2: Quản lý
+    private String path;
+    int stt;
     maHoaMatKhau maHoa=new maHoaMatKhau();
     // Constructor
     public Account(String userName, String password, String email, String name, int role) {
@@ -17,7 +19,9 @@ public class Account {
         this.name = name;
         this.role = role;
     }
-
+    public Account() {
+        // Constructor không tham số
+    }
     // Getter và Setter cho userName
     public String getUserName() {
         return userName;
@@ -59,7 +63,32 @@ public class Account {
         return role;
     }
 
+    public String getPath() {
+        return path;
+    }
+    public void setPath(String path) {
+        this.path = path;
+    }
+    public int getStt(){
+        return stt;
+    }
     public void setRole(int role) {
         this.role = role;
+    }
+    public void setStt(int stt) {
+        this.stt = stt;
+    }
+    @Override
+    public String toString() {
+        return "Account{" +
+                "userName='" + userName + '\'' +
+                ", password='" + password + '\'' +
+                ", email='" + email + '\'' +
+                ", name='" + name + '\'' +
+                ", role=" + role +
+                ", path='" + path + '\'' +
+                ", stt=" + stt +
+                ", maHoa=" + maHoa +
+                '}';
     }
 }

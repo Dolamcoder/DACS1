@@ -184,7 +184,6 @@ public class CheckoutController {
         }
         return tienPhong + tienDichVu;
     }
-
     public boolean addHoaDon(Booking selected) {
         Invoice invoice = new Invoice();
         invoice.setInvoiceID(generateInvoiceID()); // Hàm sinh ID hóa đơn
@@ -193,8 +192,9 @@ public class CheckoutController {
         invoice.setServiceBookingID(serviceBookingID);
         invoice.setTotalAmount(getTotalAmount(selected, serviceBookingDetailDao.getServicesByBookingId(serviceBookingID))); // Tổng tiền phòng + thuế 10%
         System.out.println("Total Amount: " + invoice.getTotalAmount());
-        invoice.setTax(10);         // Bạn có thể tính thuế nếu cần
-        invoice.setDiscount(1 + serviceBookingDetailDao.getServicesByBookingId(selected.getBookingId()).size());    // Không có dịch vụ -> discount = 1
+        invoice.setTax(10);
+        invoice.setAmount(1 + serviceBookingDetailDao.getServicesByBookingId(serviceBookingID).size());    // Không có dịch vụ -> discount = 1
+        System.out.println(invoice.getAmount());
         invoice.setIssueDate(new java.sql.Date(System.currentTimeMillis()));
         invoice.setStatus("Đã Thanh toán");
         boolean checkInvoice = invoiceDao.insert(invoice);
