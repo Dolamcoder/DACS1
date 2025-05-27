@@ -1,5 +1,7 @@
 package Controller.Employee;
 
+import Controller.Admin.AuditLogController;
+import Controller.Login.LoginController;
 import Dao.Employee.*;
 import Model.*;
 import Service.BookingSchedulerService;
@@ -129,6 +131,7 @@ public class CheckoutController {
                         20// 60 phút = 1 giờ
                 );
                 al.showInfoAlert("Check-out thành công. Phòng Cần dọn dẹp trong x20 phút");
+                AuditLogController.getAuditLog("booking", bookingId, "Check-out", LoginController.account.getName());
                 loadTableData(); // refresh danh sách
             } else {
                 al.showErrorAlert("Check-out thất bại");
@@ -198,6 +201,7 @@ public class CheckoutController {
         invoice.setIssueDate(new java.sql.Date(System.currentTimeMillis()));
         invoice.setStatus("Đã Thanh toán");
         boolean checkInvoice = invoiceDao.insert(invoice);
+        AuditLogController.getAuditLog("invoice", invoice.getInvoiceID(), "Tạo hóa đơn", LoginController.account.getName());
         return checkInvoice;
     }
     public boolean addCardLevel(double totalAmount, String customerId) {
@@ -210,6 +214,7 @@ public class CheckoutController {
             double newTotalAmount = existingCard.getTotalAmount() + totalAmount;
             existingCard.setTotalAmount(newTotalAmount);
             existingCard.updateLevelBasedOnAmount();
+            AuditLogController.getAuditLog("card_level", customerId, "Cập nhật cấp độ thẻ", LoginController.account.getName());
             return cardLevelDao.update(existingCard);
         } else {
             // Tạo cấp độ thẻ mới cho khách hàng
@@ -219,10 +224,9 @@ public class CheckoutController {
             // Xác định tên cấp độ và mô tả dựa trên tổng số tiền
             String levelName = CardLevel.determineLevelName(totalAmount);
             String description = CardLevel.getLevelDescription(levelName);
-
             newCardLevel.setLevelName(levelName);
             newCardLevel.setDescription(description);
-
+            AuditLogController.getAuditLog("card_level", customerId, "Tạo cấp độ thẻ", LoginController.account.getName());
             return cardLevelDao.insert(newCardLevel);
         }
     }

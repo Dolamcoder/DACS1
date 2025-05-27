@@ -16,6 +16,7 @@ public class RoomDao implements DaoInterface<Room> {
 
     @Override
     public boolean insert(Room room) {
+        con = JDBC.getConnection();
         String query = "INSERT INTO room (roomID, number, loaiPhong, price, status) VALUES (?, ?, ?, ?, ?)";
         try {
             PreparedStatement pstm = con.prepareStatement(query);
@@ -36,6 +37,7 @@ public class RoomDao implements DaoInterface<Room> {
 
     @Override
     public boolean update(Room room) {
+        con = JDBC.getConnection();
         String query = "UPDATE room SET number = ?, loaiPhong = ?, price = ?, status = ? WHERE roomID = ?";
         try {
             PreparedStatement pstm = con.prepareStatement(query);
@@ -56,6 +58,7 @@ public class RoomDao implements DaoInterface<Room> {
 
     @Override
     public boolean delete(String id) {
+        con= JDBC.getConnection();
         String query = "DELETE FROM room WHERE roomID = ?";
         try {
             PreparedStatement pstm = con.prepareStatement(query);
@@ -72,13 +75,13 @@ public class RoomDao implements DaoInterface<Room> {
 
     @Override
     public ArrayList<Room> selectAll() {
+        con= JDBC.getConnection();
         ArrayList<Room> rooms = new ArrayList<>();
         String query = "SELECT * FROM room";
 
         try {
             PreparedStatement pstm = con.prepareStatement(query);
             ResultSet rs = pstm.executeQuery();
-
             while (rs.next()) {
                 Room room = new Room();
                 room.setId(rs.getString("roomID"));
@@ -123,7 +126,6 @@ public class RoomDao implements DaoInterface<Room> {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return listRoom;
     }
     public boolean updateStatus(String roomId, int newStatus) {

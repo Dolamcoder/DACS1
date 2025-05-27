@@ -117,5 +117,16 @@ public class ServiceBookingDetailDao implements DaoInterface<ServiceBookingDetai
         }
         return services;
     }
+    public boolean deleteByServiceID(int serviceID) {
+        String sql = "DELETE FROM ServiceBookingDetail WHERE ServiceID = ?";
+        try (Connection conn = JDBC.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
+            ps.setInt(1, serviceID);
+            return ps.executeUpdate() > 0; // trả về true nếu có ít nhất 1 dòng bị xóa
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

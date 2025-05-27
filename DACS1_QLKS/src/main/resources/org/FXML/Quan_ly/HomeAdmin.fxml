@@ -58,27 +58,27 @@
                            </font>
                         </Label>
                         <Line endX="50.0" layoutX="108.0" layoutY="217.0" startX="-50.0" />
-                        <Button fx:id="roomButton" layoutX="7.0" layoutY="250.0" onAction="#roomBooking" prefHeight="34.0" prefWidth="204.0" styleClass="button_trongsuot" stylesheets="@../../Css/HomeEmployee.css" text="QUẢN LÝ PHÒNG ">
+                        <Button fx:id="roomButton" layoutX="7.0" layoutY="250.0" onAction="#handleRoom" prefHeight="34.0" prefWidth="204.0" styleClass="button_trongsuot" stylesheets="@../../Css/HomeEmployee.css" text="QUẢN LÝ PHÒNG ">
                            <graphic>
                               <FontAwesomeIcon fill="WHITE" glyphName="HOME" selectionFill="#eee5e5" size="2em" />
                            </graphic>
                         </Button>
-                        <Button fx:id="serviceButton" layoutX="7.0" layoutY="300.0" onAction="#checkin" prefWidth="175.0" styleClass="button_trongsuot" stylesheets="@../../Css/HomeEmployee.css" text="QUẢN LÝ DỊCH VỤ">
+                        <Button fx:id="serviceButton" layoutX="7.0" layoutY="300.0" onAction="#handleService" prefWidth="175.0" styleClass="button_trongsuot" stylesheets="@../../Css/HomeEmployee.css" text="QUẢN LÝ DỊCH VỤ">
                            <graphic>
                               <FontAwesomeIcon fill="WHITE" glyphName="COG" size="2EM" />
                            </graphic>
                         </Button>
-                        <Button fx:id="staffButton" layoutX="7.0" layoutY="351.0" onAction="#checkout" prefWidth="175.0" styleClass="button_trongsuot" stylesheets="@../../Css/HomeEmployee.css" text="QUẢN LÝ NHÂN VIÊN">
+                        <Button fx:id="staffButton" layoutX="7.0" layoutY="351.0" onAction="#handleStaff" prefWidth="175.0" styleClass="button_trongsuot" stylesheets="@../../Css/HomeEmployee.css" text="QUẢN LÝ NHÂN VIÊN">
                            <graphic>
                               <FontAwesomeIcon fill="WHITE" glyphName="USER_MD" size="2EM" />
                            </graphic>
                         </Button>
-                        <Button fx:id="accountButton" layoutX="7.0" layoutY="397.0" onAction="#listroomBooking" prefHeight="22.0" prefWidth="186.0" styleClass="button_trongsuot" stylesheets="@../../Css/HomeEmployee.css" text="QUẢN LÝ TÀI KHOẢN">
+                        <Button fx:id="accountButton" layoutX="7.0" layoutY="397.0" onAction="#handleAccount" prefHeight="22.0" prefWidth="186.0" styleClass="button_trongsuot" stylesheets="@../../Css/HomeEmployee.css" text="QUẢN LÝ TÀI KHOẢN">
                            <graphic>
                               <FontAwesomeIcon fill="WHITE" glyphName="LOCK" size="2EM" />
                            </graphic>
                         </Button>
-                        <Button fx:id="baoCaoButton" layoutX="8.0" layoutY="442.0" onAction="#listCustomer" prefHeight="34.0" prefWidth="208.0" styleClass="button_trongsuot" stylesheets="@../../Css/HomeEmployee.css" text="BÁO CÁO VÀ THỐNG KÊ">
+                        <Button fx:id="baoCaoButton" layoutX="8.0" layoutY="442.0" onAction="#handleBaoCao" prefHeight="34.0" prefWidth="208.0" styleClass="button_trongsuot" stylesheets="@../../Css/HomeEmployee.css" text="BÁO CÁO VÀ THỐNG KÊ">
                            <graphic>
                               <FontAwesomeIcon fill="WHITE" glyphName="BAR_CHART" size="2EM" />
                            </graphic>
@@ -101,7 +101,6 @@
                               <TableColumn fx:id="recordColum" prefWidth="91.0" text="Bản Ghi" />
                               <TableColumn fx:id="actionColum" prefWidth="226.0" text="Hoạt Động" />
                               <TableColumn fx:id="actionByColum" prefWidth="146.0" text="Người Thực Hiện" />
-                              <TableColumn fx:id="ngayThucHien" prefWidth="107.0" text="Ngày thực hiện" />
                               <TableColumn fx:id="timeColum" prefWidth="105.0" text="Thời gian" />
                           </columns>
                            <columnResizePolicy>

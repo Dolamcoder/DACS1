@@ -1,5 +1,7 @@
     package Controller.Employee;
 
+    import Controller.Admin.AuditLogController;
+    import Controller.Login.LoginController;
     import Dao.Employee.*;
     import Model.*;
     import javafx.collections.FXCollections;
@@ -275,6 +277,7 @@
 
                 if (checkInTask.getValue()) {
                     al.showInfoAlert("Check-in thành công");
+                    AuditLogController.getAuditLog("booking", booking.getBookingId(), "Check-in", LoginController.account.getName());
                     bookingList.remove(booking);
                     table.refresh();
                     clearForm();
@@ -369,6 +372,7 @@
 
                 if (addCustomerTask.getValue()) {
                     al.showInfoAlert("Thêm thông tin khách hàng thành công");
+                    AuditLogController.getAuditLog("customer", customer.getId(), "Thêm khách hàng đi cùng", LoginController.account.getName());
                     clearForm();
                 } else {
                     al.showErrorAlert("Thêm thông tin khách hàng thất bại");
@@ -398,6 +402,7 @@
 
                         if (success && success2) {
                             al.showInfoAlert("Hủy đặt phòng thành công");
+                            AuditLogController.getAuditLog("booking", booking.getBookingId(), "Hủy đặt phòng", LoginController.account.getName());
                             bookingList.remove(booking);
                             table.refresh();
                             clearForm();

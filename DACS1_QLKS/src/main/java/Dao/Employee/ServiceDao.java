@@ -89,7 +89,7 @@ public class ServiceDao implements DaoInterface<Service> {
         }
         return list;
     }
-    public Service selectById(int  id) {
+    public Service selectById(int id) {
         Service s = null;
         try {
             Connection con = JDBC.getConnection();

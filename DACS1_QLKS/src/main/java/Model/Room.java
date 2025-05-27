@@ -55,4 +55,15 @@ public class Room {
     public void setPrice(int price) {
         this.price = price;
     }
+
+    @Override
+    public String toString() {
+        return "Room{" +
+                "id='" + id + '\'' +
+                ", number=" + number +
+                ", loaiPhong='" + loaiPhong + '\'' +
+                ", price=" + price +
+                ", status=" + status +
+                '}';
+    }
 }

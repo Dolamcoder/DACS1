@@ -137,4 +137,19 @@ public class Type_roomDao implements DaoInterface<type_room> {
             throw new RuntimeException(e);
         }
     }
+    public int getPrice(String loaiPhong){
+        con = JDBC.getConnection();
+        String query = "SELECT price FROM room_type WHERE loaiPhong =?";
+        try {
+            PreparedStatement pstm = con.prepareStatement(query);
+            pstm.setString(1, loaiPhong);
+            ResultSet rs = pstm.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("price");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
 }
