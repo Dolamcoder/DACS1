@@ -151,7 +151,14 @@ public class homeAdminController {
     }
     @FXML
     void handleAccount(ActionEvent event) {
-
+        try {
+            AnchorPane ListAccount= FXMLLoader.load(getClass().getResource("/org/FXML/Quan_ly/ListAccount.fxml"));
+            this.centerPane.getChildren().clear();
+            this.centerPane.getChildren().add(ListAccount);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Không thể load: " + e.getMessage());
+        }
     }
 
     @FXML

@@ -70,10 +70,14 @@ CREATE TABLE account (
     username VARCHAR(50),
     password VARCHAR(255),
     name VARCHAR(100),
-    email varchar(50),
-    role INT CHECK (role IN (1, 2))
+    email VARCHAR(50),
+    role INT CHECK (role IN (1, 2)),
+    EmployeeID VARCHAR(10),
+    UNIQUE (EmployeeID),
+    FOREIGN KEY (EmployeeID) REFERENCES Employee(employeeID)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE
 );
-
 -- Tạo bảng employee
 CREATE TABLE employee (
     employeeID VARCHAR(10) PRIMARY KEY,
@@ -83,15 +87,7 @@ CREATE TABLE employee (
     gender VARCHAR(10) CHECK (gender IN ('Male', 'Female')),
     birth DATE,
     hireDate DATE,
-    department VARCHAR(50)
-);
-
--- Tạo bảng position
-CREATE TABLE position (
-    positionID INT PRIMARY KEY,
-    employeeID VARCHAR(10),
-    position VARCHAR(100),
-    FOREIGN KEY (employeeID) REFERENCES employee(employeeID)
+    position VARCHAR(200)
 );
 
 -- Tạo bảng salary
@@ -99,10 +95,11 @@ CREATE TABLE salary (
     salaryID INT PRIMARY KEY AUTO_INCREMENT,
     employeeID VARCHAR(10),
     amount DOUBLE,
-    paymentDate DATE,
-    status VARCHAR(50) CHECK (status IN ('Đã thanh toán', 'Chưa thanh toán')),
-    notes TEXT,
+    allowance double,
+    transportAllowance double,
     FOREIGN KEY (employeeID) REFERENCES employee(employeeID)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
 );
 
 -- Tạo bảng employee_review
@@ -114,7 +111,10 @@ CREATE TABLE employee_review (
     comments TEXT,
     bonusAmount DOUBLE DEFAULT 0,
     FOREIGN KEY (employeeID) REFERENCES employee(employeeID)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
 );
+
 
 -- Tạo bảng service
 CREATE TABLE service (

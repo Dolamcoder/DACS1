@@ -159,7 +159,6 @@ public class ListServiceController implements Initializable {
             al.showErrorAlert("Mã dịch vụ đã tồn tại!");
             return;
         }
-
         Service newService = new Service(Integer.parseInt(serviceID), name, price, description);
 
         if (serviceDao.insert(newService)) {

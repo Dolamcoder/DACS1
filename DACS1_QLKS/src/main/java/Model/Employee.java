@@ -7,4 +7,10 @@ public class Employee extends Person {
     public Employee() {
         super();
     }
+    public String getHireDate() {
+        return hireDate.toString();
+    }
+    public void setHireDate(LocalDate hireDate) {
+        this.hireDate = hireDate;
+    }
 }
