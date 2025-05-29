@@ -163,7 +163,14 @@ public class homeAdminController {
 
     @FXML
     void handleBaoCao(ActionEvent event) {
-
+        try {
+            AnchorPane ListAccount= FXMLLoader.load(getClass().getResource("/org/FXML/Quan_ly/baoCao_thongKe.fxml"));
+            this.centerPane.getChildren().clear();
+            this.centerPane.getChildren().add(ListAccount);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Không thể load: " + e.getMessage());
+        }
     }
 
     @FXML

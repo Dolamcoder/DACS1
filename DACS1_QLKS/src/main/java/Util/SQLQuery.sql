@@ -160,7 +160,6 @@ CREATE TABLE audit_log (
     recordID VARCHAR(10),
     action VARCHAR(50),
     actionBy VARCHAR(50),
-    Ngay_thuc_hien DATE DEFAULT CURRENT_TIMESTAMP,
     actionAt DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 -- bản ghi
