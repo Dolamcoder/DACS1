@@ -1,6 +1,6 @@
 package Controller.Login;
 import Dao.DangNhap.ForgotPassDao;
-import Alert.alert;
+import Alert.Alert;
 import Mail.Mail;
 import encryption.maHoaMatKhau;
 import javafx.fxml.FXML;
@@ -11,7 +11,7 @@ import javafx.stage.Stage;
 
 
 public class quenMKController {
-    private final alert alert=new alert();
+    private final Alert alert=new Alert();
     private int code;
     private int inputCode;
     @FXML

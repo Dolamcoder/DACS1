@@ -1,6 +1,6 @@
 package Controller.Invoice;
 
-import Alert.alert;
+import Alert.Alert;
 import Dao.Employee.*;
 import Model.Invoice;
 import Model.Customer;
@@ -53,7 +53,7 @@ public class ListInvoiceController implements Initializable {
     private final CustomerDao customerDao;
     private final RoomBookingDao bookingDao;
     private final Map<String, String> customerNames = new HashMap<>();
-    private final alert al = new alert();
+    private final Alert al = new Alert();
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     public ListInvoiceController() {
@@ -162,7 +162,7 @@ public class ListInvoiceController implements Initializable {
         }
 
         // Hộp thoại xác nhận xóa
-        Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
+        javafx.scene.control.Alert confirmAlert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.CONFIRMATION);
         confirmAlert.setTitle("Xác nhận xóa");
         confirmAlert.setHeaderText(null);
         confirmAlert.setContentText("Bạn có chắc muốn xóa hóa đơn này không?");
@@ -170,7 +170,6 @@ public class ListInvoiceController implements Initializable {
         Optional<ButtonType> result = confirmAlert.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             boolean success = invoiceDao.delete(selectedInvoice.getInvoiceID());
-
             if (success) {
                 al.showInfoAlert("Đã xóa hóa đơn thành công!");
                 // Cập nhật lại bảng nếu cần

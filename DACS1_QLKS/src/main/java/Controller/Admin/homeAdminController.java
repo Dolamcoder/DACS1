@@ -199,7 +199,14 @@ public class homeAdminController {
 
     @FXML
     void handleStaff(ActionEvent event) {
-
+        try{
+            AnchorPane listStaff= FXMLLoader.load(getClass().getResource("/org/FXML/Quan_ly/ListStaff.fxml"));
+            this.centerPane.getChildren().clear();
+            this.centerPane.getChildren().add(listStaff);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Không thể load: " + e.getMessage());
+        }
     }
 
     @FXML

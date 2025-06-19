@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane minHeight="528.0" minWidth="882.0" prefHeight="538.0" prefWidth="882.0" styleClass="top_panel" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.Admin.ListAccount">
+<AnchorPane fx:id="rootPane" minHeight="528.0" minWidth="882.0" prefHeight="538.0" prefWidth="882.0" styleClass="top_panel" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.Admin.ListStaffController">
    <children>
       <Label layoutX="348.0" layoutY="25.0" text="DANH SÁCH NHÂN VIÊN">
          <font>
@@ -23,13 +23,13 @@
       <TableView fx:id="accountTable" layoutX="12.0" layoutY="53.0" prefHeight="304.0" prefWidth="858.0">
          <columns>
             <TableColumn fx:id="idColum" prefWidth="67.0" text="ID" />
-            <TableColumn fx:id="usernameColum" prefWidth="136.0" text="Name" />
-            <TableColumn fx:id="passwordColum" prefWidth="137.0" text="Email" />
-            <TableColumn fx:id="nameColum" prefWidth="126.0" text="SDT" />
-            <TableColumn fx:id="emailColum" prefWidth="58.0" text="Gender" />
-            <TableColumn fx:id="positionColum" prefWidth="111.0" text="BirdDate" />
-            <TableColumn fx:id="EmployeeColum" prefWidth="112.0" text="HireDate" />
-            <TableColumn fx:id="EmployeeColum1" prefWidth="112.0" text="Position" />
+            <TableColumn fx:id="nameColum" prefWidth="136.0" text="Name" />
+            <TableColumn fx:id="emailColum" prefWidth="137.0" text="Email" />
+            <TableColumn fx:id="phoneColum" prefWidth="126.0" text="SDT" />
+            <TableColumn fx:id="genderColum" prefWidth="58.0" text="Gender" />
+            <TableColumn fx:id="BirdDateColum" prefWidth="111.0" text="BirdDate" />
+            <TableColumn fx:id="HireDateColum" prefWidth="112.0" text="HireDate" />
+            <TableColumn fx:id="positionColum" prefWidth="112.0" text="Position" />
          </columns>
          <columnResizePolicy>
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -45,13 +45,13 @@
             <Font name="System Bold" size="14.0" />
          </font>
       </Label>
-      <TextField fx:id="passwordText" layoutX="78.0" layoutY="424.0" prefHeight="31.0" prefWidth="133.0" />
+      <TextField fx:id="phoneText" layoutX="78.0" layoutY="424.0" prefHeight="31.0" prefWidth="133.0" />
       <Label layoutX="498.0" layoutY="390.0" text="Email:">
          <font>
             <Font name="System Bold" size="14.0" />
          </font>
       </Label>
-      <TextField fx:id="nameText" layoutX="554.0" layoutY="388.0" />
+      <TextField fx:id="emailText" layoutX="554.0" layoutY="388.0" />
       <Label layoutX="225.0" layoutY="431.0" text="BirdDate:">
          <font>
             <Font name="System Bold" size="14.0" />
@@ -59,45 +59,45 @@
       </Label>
       <Button fx:id="saveButton" layoutX="97.0" layoutY="467.0" mnemonicParsing="false" onAction="#save" prefHeight="31.0" prefWidth="149.0" text="Lưu Danh Sách">
          <graphic>
-            <FontAwesomeIcon glyphName="SAVE" size="1.5em" />
+            <FontAwesomeIcon fx:id="save" glyphName="SAVE" size="1.5em" />
          </graphic>
       </Button>
-      <Button fx:id="addButton" layoutX="256.0" layoutY="468.0" mnemonicParsing="false" onAction="#add" prefHeight="26.0" prefWidth="94.0" text="Thêm">
+      <Button fx:id="add" layoutX="263.0" layoutY="467.0" mnemonicParsing="false" onAction="#add" prefHeight="26.0" prefWidth="94.0" text="Thêm">
          <graphic>
             <FontAwesomeIcon glyphName="PLUS" size="1.5em" wrappingWidth="23.5" />
          </graphic>
       </Button>
-      <Button fx:id="removeButton" layoutX="368.0" layoutY="467.0" mnemonicParsing="false" onAction="#remove" prefHeight="26.0" prefWidth="104.0" text="Xoá">
+      <Button fx:id="remove" layoutX="368.0" layoutY="467.0" mnemonicParsing="false" onAction="#remove" prefHeight="26.0" prefWidth="104.0" text="Xoá">
          <graphic>
             <FontAwesomeIcon glyphName="TRASH" size="1.5em" />
          </graphic>
       </Button>
-      <Button fx:id="updateButton" layoutX="488.0" layoutY="468.0" mnemonicParsing="false" onAction="#update" prefHeight="26.0" prefWidth="94.0" text="Update">
+      <Button fx:id="update" layoutX="488.0" layoutY="468.0" mnemonicParsing="false" onAction="#update" prefHeight="26.0" prefWidth="94.0" text="Update">
          <graphic>
             <FontAwesomeIcon glyphName="REFRESH" size="1.5em" />
          </graphic>
       </Button>
       <ProgressBar fx:id="progressBar" layoutX="21.0" layoutY="506.0" prefHeight="18.0" prefWidth="845.0" progress="0.0" />
-      <TextField fx:id="searchText" layoutX="691.0" layoutY="22.0" prefHeight="31.0" prefWidth="181.0" promptText="Tìm kiếm tài khoản" />
+      <TextField fx:id="searchText" layoutX="691.0" layoutY="22.0" prefHeight="31.0" prefWidth="181.0" promptText="Tìm kiếm nhân viên" />
       <Label layoutX="55.0" layoutY="385.0" text="ID:">
          <font>
             <Font name="System Bold" size="14.0" />
          </font>
       </Label>
-      <TextField fx:id="usernameText" layoutX="294.0" layoutY="383.0" />
+      <TextField fx:id="nameText" layoutX="294.0" layoutY="383.0" />
       <Label layoutX="488.0" layoutY="432.0" text="HireDate:">
          <font>
             <Font size="14.0" />
          </font>
       </Label>
-      <Button layoutX="597.0" layoutY="469.0" mnemonicParsing="false" text="Điểm Danh" />
-      <Button layoutX="700.0" layoutY="468.0" mnemonicParsing="false" text="Xem Đánh Giá" />
-      <TextField layoutX="78.0" layoutY="382.0" prefHeight="31.0" prefWidth="88.0" />
-      <DatePicker layoutX="294.0" layoutY="425.0" />
-      <DatePicker layoutX="554.0" layoutY="425.0" />
-      <ComboBox layoutX="754.0" layoutY="375.0" prefHeight="39.0" prefWidth="117.0" promptText="Chức Vụ" />
-      <ComboBox layoutX="754.0" layoutY="420.0" prefHeight="31.0" prefWidth="117.0" promptText="Gender" />
-      <ComboBox layoutX="14.0" layoutY="6.0" prefHeight="39.0" prefWidth="150.0" promptText="Xem mục khác" />
+      <Button fx:id="diemDanh" layoutX="597.0" layoutY="469.0" mnemonicParsing="false" onAction="#handleDiemDanh" text="Điểm Danh" />
+      <Button layoutX="700.0" layoutY="468.0" mnemonicParsing="false" onAction="#handleXemDanhGia" text="Xem Đánh Giá" fx:id="xemDanhGia" />
+      <TextField fx:id="idText" layoutX="78.0" layoutY="382.0" prefHeight="31.0" prefWidth="88.0" />
+      <DatePicker fx:id="BirdText" layoutX="294.0" layoutY="425.0" />
+      <DatePicker fx:id="hireDateText" layoutX="554.0" layoutY="425.0" />
+      <ComboBox fx:id="chucVuText" layoutX="754.0" layoutY="375.0" prefHeight="39.0" prefWidth="117.0" promptText="Chức Vụ" />
+      <ComboBox fx:id="gioiTinhText" layoutX="754.0" layoutY="420.0" prefHeight="31.0" prefWidth="117.0" promptText="Gender" />
+      <ComboBox fx:id="select" layoutX="14.0" layoutY="6.0" onAction="#clickSelect" prefHeight="39.0" prefWidth="161.0" promptText="Xem mục khác" />
    </children>
    <stylesheets>
       <URL value="@../../Css/HomeEmployee.css" />

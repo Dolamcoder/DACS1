@@ -47,7 +47,6 @@ public class InvoiceController {
 
     @FXML
     private Label bookingID;
-
     @FXML
     private Label soNgay;
     @FXML
@@ -76,41 +75,6 @@ public class InvoiceController {
     private Label tongThanhToan;
     @FXML
     private TableView<Service> service;
-    @FXML
-    private Button xuatHoaDon;
-    @FXML
-    public void setXuatHoaDon() {
-        // Create file chooser dialog
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Lưu hóa đơn PDF");
-        fileChooser.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("PDF Files", "*.pdf")
-        );
-        fileChooser.setInitialFileName("HoaDon_" + invoice.getInvoiceID() + ".pdf");
-
-        // Show save dialog
-        File file = fileChooser.showSaveDialog(xuatHoaDon.getScene().getWindow());
-
-        if (file != null) {
-            try {
-                // Use InvoiceExporter to generate the PDF
-                InvoiceExporter exporter = new InvoiceExporter();
-                exporter.exportInvoiceToPdf(file.getAbsolutePath(), invoice);
-
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Thông báo");
-                alert.setHeaderText(null);
-                alert.setContentText("Xuất hóa đơn thành công!");
-                alert.showAndWait();
-            } catch (Exception e) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Lỗi xuất PDF");
-                alert.setHeaderText("Không thể xuất hóa đơn");
-                alert.setContentText("Lỗi: " + e.getMessage());
-                alert.showAndWait();
-            }
-        }
-    }
     public void setInvoice(Invoice invoice) {
         this.invoice = invoice;
         updateUI();

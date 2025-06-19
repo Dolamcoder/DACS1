@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.net.URL?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
@@ -14,7 +15,7 @@
 
 <AnchorPane prefHeight="541.0" prefWidth="902.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.Employee.CheckinController">
    <children>
-      <Label layoutX="411.0" layoutY="25.0" text="Check - in" textFill="#205b53">
+      <Label layoutX="411.0" layoutY="25.0" text="CHECK-IN" textFill="#205b53">
          <font>
             <Font name="System Bold" size="22.0" />
          </font>
@@ -80,9 +81,9 @@
          </font>
       </Label>
       <TextField fx:id="phone" layoutX="602.0" layoutY="421.0" prefHeight="25.0" prefWidth="270.0" />
-      <Button fx:id="checkin" layoutX="794.0" layoutY="472.0" mnemonicParsing="false" onAction="#checkIn" stylesheets="@../../Css/RoomBooking.css" text="Check - in" textFill="#3c8897" />
-      <TextField fx:id="timKiemText" layoutX="731.0" layoutY="58.0" />
-      <Button fx:id="addCustomer" layoutX="653.0" layoutY="471.0" mnemonicParsing="false" onAction="#addKhachHang" stylesheets="@../../Css/RoomBooking.css" text="Khách hàng đi cùng" />
+      <Button fx:id="checkin" layoutX="794.0" layoutY="472.0" mnemonicParsing="false" onAction="#checkIn" text="Check - in" textFill="#3c8897" />
+      <TextField fx:id="timKiemText" layoutX="731.0" layoutY="55.0" />
+      <Button fx:id="addCustomer" layoutX="631.0" layoutY="472.0" mnemonicParsing="false" onAction="#addKhachHang" text="Khách hàng đi cùng" />
       <ProgressBar fx:id="tienTrinh" layoutX="521.0" layoutY="509.0" prefHeight="18.0" prefWidth="346.0" progress="0.0" />
       <Label layoutX="25.0" layoutY="492.0" />
       <Label layoutX="25.0" layoutY="493.0" text="Mã Phòng:">
@@ -91,6 +92,10 @@
          </font>
       </Label>
       <TextField fx:id="idPhongText" layoutX="167.0" layoutY="497.0" prefHeight="25.0" prefWidth="270.0" />
-      <Button fx:id="huyDatPhong" layoutX="535.0" layoutY="471.0" mnemonicParsing="false" onAction="#huyDatPhong" stylesheets="@../../Css/RoomBooking.css" text="Huỷ đặt phòng" />
+      <Button fx:id="huyDatPhong" layoutX="503.0" layoutY="472.0" mnemonicParsing="false" onAction="#huyDatPhong" text="Huỷ đặt phòng" />
    </children>
+   <stylesheets>
+      <URL value="@../../Css/HomeEmployee.css" />
+      <URL value="@../../Css/listRoomCss.css" />
+   </stylesheets>
 </AnchorPane>

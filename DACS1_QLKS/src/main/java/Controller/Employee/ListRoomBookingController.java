@@ -1,12 +1,11 @@
 package Controller.Employee;
+import Controller.Admin.AuditLogController;
 import Controller.Invoice.InvoiceController;
-import Dao.Employee.CustomerDao;
-import Dao.Employee.InvoiceDao;
-import Dao.Employee.RoomBookingDao;
-import Dao.Employee.RoomDao;
+import Controller.Login.LoginController;
+import Dao.Employee.*;
 import Model.Booking;
 import Model.Invoice;
-import Service.BookingSchedulerService;
+import Model.Service;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -32,13 +31,9 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.ResourceBundle;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.*;
 
-import Alert.alert;
+import Alert.Alert;
 public class ListRoomBookingController implements Initializable {
     @FXML private AnchorPane rootPane;
     @FXML private TableView<Booking> table;
@@ -61,7 +56,7 @@ public class ListRoomBookingController implements Initializable {
     private RoomBookingDao bookingDao = new RoomBookingDao();
     private RoomDao roomDao = new RoomDao();
     private CustomerDao customerDao = new CustomerDao();
-    private alert al = new alert();
+    private Alert al = new Alert();
     private Timer progressTimer;
     private boolean operationInProgress = false;
 
@@ -209,8 +204,6 @@ public class ListRoomBookingController implements Initializable {
         // Chạy tác vụ trong luồng nền
         new Thread(task).start();
     }
-
-
     @FXML
     public void searchBookings() {
         String searchText = searchField.getText().trim().toLowerCase();
@@ -345,6 +338,7 @@ public class ListRoomBookingController implements Initializable {
             stopRealTimeProgress();
             if (task.getValue()) {
                 al.showInfoAlert("Cập nhật thành công!");
+                AuditLogController.getAuditLog("Booking", selectedBooking.getBookingId(), "Cập nhật đặt phòng", LoginController.account.getName());
             } else {
                 al.showErrorAlert("Cập nhật thất bại!");
             }
@@ -360,79 +354,56 @@ public class ListRoomBookingController implements Initializable {
             al.showErrorAlert("Vui lòng chọn một đặt phòng để xóa");
             return;
         }
-
-        // Special case for cancelled bookings - delete directly
-        if (selectedBooking.getStatus().equals("Đã hủy")) {
-            startRealTimeProgress();
-
-            Task<Boolean> task = new Task<>() {
-                @Override
-                protected Boolean call() throws Exception {
-                    updateProgress(0.5, 1.0);
-                    boolean success = bookingDao.delete(selectedBooking.getBookingId());
-                    updateProgress(1.0, 1.0); // 100% when complete
-                    return success ;
-                }
-            };
-            progressBar.progressProperty().bind(task.progressProperty());
-            task.setOnSucceeded(event -> {
-                boolean success = task.getValue();
-                if (success) {
-                    loadBookings();
-                    al.showInfoAlert("Xóa đặt phòng đã huỷ thành công");
-                } else {
-                    al.showErrorAlert("Không thể xóa đặt phòng");
-                }
-                finishRealTimeProgress();
-            });
-
-            task.setOnFailed(event -> {
-                stopRealTimeProgress();
-                al.showErrorAlert("Lỗi khi xóa: " + task.getException().getMessage());
-            });
-
-            new Thread(task).start();
+        if(selectedBooking.getStatus().equals("Đang ở"))
+        {
+            al.showErrorAlert("Không thể xóa đặt phòng đang ở");
             return;
         }
+        // Hộp thoại xác nhận
+        javafx.scene.control.Alert confirmAlert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.CONFIRMATION);
+        confirmAlert.setTitle("Xác nhận xóa");
+        confirmAlert.setHeaderText("Bạn có chắc chắn muốn xóa đặt phòng này không?");
+        confirmAlert.setContentText("Thao tác này không thể hoàn tác.");
 
-        // Original flow for confirmed bookings
-        else if (!selectedBooking.getStatus().equals("Đã xác nhận")) {
-            al.showErrorAlert("Chỉ có thể xóa đặt phòng đã xác nhận hoặc đã huỷ");
-            return;
+        // Hiển thị và chờ phản hồi
+        Optional<ButtonType> result = confirmAlert.showAndWait();
+        if (result.isEmpty() || result.get() != ButtonType.OK) {
+            return; // Người dùng chọn Cancel hoặc đóng dialog
         }
+
+        // Nếu người dùng xác nhận, tiến hành xóa
         Task<Boolean> task = new Task<>() {
             @Override
             protected Boolean call() throws Exception {
-                updateProgress(0.3, 1.0); // 30% khi bắt đầu
-                roomDao.updateStatus(selectedBooking.getRoomId(), 1);
-                updateProgress(0.6, 1.0); // 60% sau khi cập nhật trạng thái phòng
-                customerDao.updateCustomerStatus(selectedBooking.getCustomerId(), "Đã huỷ");
-                updateProgress(0.9, 1.0); // 90% sau khi cập nhật trạng thái khách hàng
+                updateProgress(0.5, 1.0);
                 boolean success = bookingDao.delete(selectedBooking.getBookingId());
-                updateProgress(1.0, 1.0); // 100% khi hoàn thành
+                updateProgress(1.0, 1.0);
                 return success;
             }
         };
-        progressBar.progressProperty().bind(task.progressProperty());
 
-        task.setOnSucceeded(event -> {
-            boolean success = task.getValue();
-            if (success) {
-                loadBookings();
-                al.showInfoAlert("Xóa đặt phòng thành công");
-            } else {
-                al.showErrorAlert("Không thể xóa đặt phòng");
-            }
-            finishRealTimeProgress();
-        });
+        progressBar.progressProperty().bind(task.progressProperty());
 
         task.setOnFailed(event -> {
             stopRealTimeProgress();
-            al.showErrorAlert("Lỗi khi xóa: " + task.getException().getMessage());
+            al.showErrorAlert("Lỗi khi xoá: " + task.getException().getMessage());
+        });
+
+        task.setOnSucceeded(event -> {
+            stopRealTimeProgress();
+            if (task.getValue()) {
+                al.showInfoAlert("Xoá thành công!");
+                bookingsList.remove(selectedBooking);
+                loadBookings();
+                AuditLogController.getAuditLog("Booking", selectedBooking.getBookingId(), "Xoá đặt phòng", LoginController.account.getName());
+            } else {
+                al.showErrorAlert("Xoá thất bại!");
+            }
         });
 
         new Thread(task).start();
     }
+
 
     @FXML
     public void saveBookingList() {
@@ -530,6 +501,7 @@ public class ListRoomBookingController implements Initializable {
         task.setOnSucceeded(event -> {
             al.showInfoAlert("Xuất danh sách đặt phòng thành công");
             finishRealTimeProgress();
+            AuditLogController.getAuditLog("Booking", "Export", "Xuất danh sách đặt phòng", LoginController.account.getName());
         });
 
         // Xử lý khi có lỗi
@@ -554,20 +526,13 @@ public class ListRoomBookingController implements Initializable {
         Task<Invoice> task = new Task<>() {
             @Override
             protected Invoice call() throws Exception {
-                // Load invoice data for selected booking
-                InvoiceDao invoiceDao = new InvoiceDao();
-                Invoice invoice = invoiceDao.findByBookingID(selectedBooking.getBookingId());
-                if (invoice == null) {
-                    throw new Exception("Không tìm thấy hóa đơn cho đặt phòng này");
-                }
-                return invoice;
+                return getInvoice(selectedBooking);
             }
         };
 
         task.setOnSucceeded(event -> {
             try {
                 Invoice invoice = task.getValue();
-
                 // Load the invoice FXML view
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/FXML/HoaDon/invoice.fxml"));
                 Parent root = loader.load();
@@ -580,7 +545,6 @@ public class ListRoomBookingController implements Initializable {
                 stage.setScene(new Scene(root));
                 stage.setResizable(false);
                 stage.show();
-
             } catch (IOException e) {
                 al.showErrorAlert("Lỗi khi hiển thị hóa đơn: " + e.getMessage());
             } finally {
@@ -695,5 +659,30 @@ public class ListRoomBookingController implements Initializable {
                 }
             }
         }
+    }
+    public double getTotalAmount(Booking booking, ArrayList<Service> services) {
+        RoomDao rDao = new RoomDao();
+        double tienPhong = booking.calculateTotalRoomCost(rDao.getPriceById(booking.getRoomId()));
+        double tienDichVu = 0;
+        for (Service service : services) {
+            tienDichVu += service.getPrice();
+            System.out.println("Service Price: " + service.getPrice());
+        }
+        return tienPhong + tienDichVu;
+    }
+    public Invoice getInvoice(Booking selected){
+        ServiceBookingDao serviceBookingDao=new ServiceBookingDao();
+        ServiceBookingDetailDao serviceBookingDetailDao=new ServiceBookingDetailDao();
+        Invoice invoice = new Invoice();
+        invoice.setBookingID(selected.getBookingId());
+        String serviceBookingID = serviceBookingDao.getByRoomId(selected.getRoomId());
+        invoice.setServiceBookingID(serviceBookingID);
+        invoice.setTotalAmount(getTotalAmount(selected, serviceBookingDetailDao.getServicesByBookingId(serviceBookingID))); // Tổng tiền phòng + thuế 10%
+        System.out.println("Total Amount: " + invoice.getTotalAmount());
+        invoice.setTax(10);
+        invoice.setAmount(1 + serviceBookingDetailDao.getServicesByBookingId(serviceBookingID).size());    // Không có dịch vụ -> discount = 1
+        System.out.println(invoice.getAmount());
+        invoice.setIssueDate(new java.sql.Date(System.currentTimeMillis()));
+        return invoice;
     }
 }

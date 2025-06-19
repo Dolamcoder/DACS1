@@ -1,4 +1,6 @@
 package Controller.Employee;
+import Controller.Admin.AuditLogController;
+import Controller.Login.LoginController;
 import Dao.Employee.*;
 import Mail.MailThongBaoHotel;
 import Model.*;
@@ -12,12 +14,11 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
-import Alert.alert;
+import Alert.Alert;
 import javafx.util.Duration;
 
 import java.io.IOException;
 import java.sql.Date;
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -25,7 +26,7 @@ import java.util.Set;
 
 public class RoomBookingController {
     ArrayList<Room> listRoom;
-    alert al=new alert();
+    Alert al=new Alert();
     Type_roomDao tDao;
     private String email;
     RoomDao roomDao;
@@ -291,7 +292,7 @@ public class RoomBookingController {
     }
 
     private void sendBookingConfirmationEmail(Booking booking) {
-        Alert sendingAlert = new Alert(Alert.AlertType.INFORMATION);
+        javafx.scene.control.Alert sendingAlert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
         sendingAlert.setTitle("Đang gửi mail...");
         sendingAlert.setHeaderText(null);
         sendingAlert.setContentText("Hệ thống đang gửi email... (đã chờ 0 giây)");
@@ -321,6 +322,7 @@ public class RoomBookingController {
                     clearForm();
                     autoIDRoomBooking();
                     dataTableRoom();
+                    AuditLogController.getAuditLog("booking", booking.getBookingId(), "Đặt phòng cho khách hàng "+nameCustomer.getText(), LoginController.account.getName());
                 });
             } catch (Exception e) {
                 e.printStackTrace();

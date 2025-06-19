@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon?>
+<?import java.net.URL?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
@@ -9,7 +11,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="541.0" prefWidth="902.0" stylesheets="@../../Css/RoomBooking.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.Employee.ServiceBookingController">
+<AnchorPane prefHeight="541.0" prefWidth="902.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.Employee.ServiceBookingController">
     <children>
         <!-- Bảng danh sách dịch vụ -->
         <TableView fx:id="serviceTable" layoutX="14.0" layoutY="98.0" prefHeight="400.0" prefWidth="440.0">
@@ -46,10 +48,23 @@
             <Font name="System Bold" size="22.0" />
          </font>
       </Label>
-      <Button fx:id="confirm" layoutX="803.0" layoutY="505.0" mnemonicParsing="false" onAction="#handlePlaceServiceBooking" text="Xác nhận" />
+      <Button fx:id="confirm" layoutX="790.0" layoutY="505.0" mnemonicParsing="false" onAction="#handlePlaceServiceBooking" text="Xác nhận">
+         <graphic>
+            <FontAwesomeIcon glyphName="CHECK" size="1.5EM" />
+         </graphic></Button>
       <ComboBox fx:id="slectRoom" layoutX="474.0" layoutY="99.0" onAction="#handleRoomSelection" prefWidth="150.0" promptText="Chọn khách hàng" stylesheets="@../../Css/RoomBooking.css" />
-      <Button fx:id="remove" layoutX="356.0" layoutY="505.0" mnemonicParsing="false" onAction="#handleRemoveService" prefHeight="29.0" prefWidth="62.0" text="Xoá" />
-      <Button fx:id="add" layoutX="260.0" layoutY="505.0" mnemonicParsing="false" onAction="#handleAddService" text="Thêm" />
+      <Button fx:id="remove" layoutX="337.0" layoutY="505.0" mnemonicParsing="false" onAction="#handleRemoveService" prefHeight="31.0" prefWidth="82.0" text="Xoá">
+         <graphic>
+            <FontAwesomeIcon glyphName="TRASH" size="1.5EM" />
+         </graphic></Button>
+      <Button fx:id="add" layoutX="242.0" layoutY="505.0" mnemonicParsing="false" onAction="#handleAddService" text="Thêm">
+         <graphic>
+            <FontAwesomeIcon glyphName="PLUS" size="1.5EM" />
+         </graphic></Button>
 
     </children>
+   <stylesheets>
+      <URL value="@../../Css/listRoomCss.css" />
+      <URL value="@../../Css/HomeEmployee.css" />
+   </stylesheets>
 </AnchorPane>

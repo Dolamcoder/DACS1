@@ -6,7 +6,6 @@ import Dao.Employee.RoomDao;
 import Dao.Employee.ServiceBookingDao;
 import Dao.Employee.Type_roomDao;
 import Model.Room;
-import Model.ServiceBooking;
 import Model.type_room;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -17,15 +16,13 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
-import Alert.alert;
+import Alert.Alert;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.List;
 
 public class listRoomController implements Initializable {
 
@@ -83,7 +80,7 @@ public class listRoomController implements Initializable {
     private RoomDao roomDao;
     private ObservableList<Room> roomList;
     private ObservableList<String> statusList;
-    private alert al = new alert();
+    private Alert al = new Alert();
     private Type_roomDao typeRoomDao = new Type_roomDao();
 
     @Override

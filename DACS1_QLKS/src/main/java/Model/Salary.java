@@ -1,55 +1,63 @@
 package Model;
 
 public class Salary {
-    private int tichCuc;  // Thưởng tích cực (ví dụ: thưởng hiệu suất tốt)
-    private int tieuCuc;   // Phạt tiêu cực (ví dụ: phạt vi phạm quy định)
-    private double salary; // Lương cơ bản của nhân viên
-    private String employeeId;// ID của nhân viên
+    private int salaryID;
+    private String employeeID;
+    private int amount;
+    private int transportAllowance;
+    private String name;
+    private String position;
+    public Salary() {}
 
-    // Constructor
-    public Salary(int tichCuc, int tieuCuc, double salary, String employeeId) {
-        this.tichCuc = tichCuc;
-        this.tieuCuc = tieuCuc;
-        this.salary = salary;
-        this.employeeId=employeeId;
-    }
-    public int getTichCuc() {
-        return tichCuc;
-    }
-
-    public void setTichCuc(int tichCuc) {
-        this.tichCuc = tichCuc;
+    public Salary(int salaryID, String employeeID, int amount, int transportAllowance) {
+        this.salaryID = salaryID;
+        this.employeeID = employeeID;
+        this.amount = amount;
+        this.transportAllowance = transportAllowance;
     }
 
-    // Getter và Setter cho tieuCuc
-    public int getTieuCuc() {
-        return tieuCuc;
+    // Getters and Setters
+    public int getSalaryID() {
+        return salaryID;
     }
 
-    public void setTieuCuc(int tieuCuc) {
-        this.tieuCuc = tieuCuc;
+    public void setSalaryID(int salaryID) {
+        this.salaryID = salaryID;
     }
 
-    // Getter và Setter cho salary
-    public double getSalary() {
-        return salary;
+    public String getEmployeeID() {
+        return employeeID;
     }
 
-    public void setSalary(double salary) {
-        this.salary = salary;
+    public void setEmployeeID(String employeeID) {
+        this.employeeID = employeeID;
     }
 
-    // Getter và Setter cho idStaff
-    public String getEmployeeId() {
-        return employeeId;
+    public int getAmount() {
+        return amount;
     }
 
-    public void setIdStaff(String idStaff) {
-        this.employeeId= employeeId;
+    public void setAmount(int amount) {
+        this.amount = amount;
     }
 
-    // Phương thức tính lương thực tế (lương cơ bản + thưởng - phạt)
-    public double calculateNetSalary() {
-        return salary + tichCuc - tieuCuc;
+    public int getTransportAllowance() {
+        return transportAllowance;
+    }
+
+    public void setTransportAllowance(int transportAllowance) {
+        this.transportAllowance = transportAllowance;
+    }
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
+    public String getPosition() {
+        return position;
+    }
+    public void setPosition(String position) {
+        this.position = position;
     }
 }

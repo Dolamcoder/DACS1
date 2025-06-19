@@ -1,9 +1,8 @@
 package Controller.Employee;
 
-import Alert.alert;
+import Alert.Alert;
+import Controller.Admin.AuditLogController;
 import Dao.Employee.CustomerDao;
-import Dao.Employee.RoomBookingDao;
-import Model.Booking;
 import Model.Customer;
 import Model.TaoID;
 import javafx.collections.FXCollections;
@@ -12,7 +11,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TextField;
-import javafx.scene.input.MouseEvent;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,13 +25,13 @@ import regex.InputValidator;
 public class selectCustomerController {
     ArrayList<Customer> listCustomer;
     CustomerDao cusDao;
-    alert al;
+    Alert al;
     InputValidator input=new InputValidator();
     public static Customer customer;
     public selectCustomerController() {
         cusDao = new CustomerDao();
         listCustomer = cusDao.selectAll();
-        al = new alert();
+        al = new Alert();
     }
     @FXML
     private Button addButton;
@@ -64,9 +62,6 @@ public class selectCustomerController {
 
     @FXML
     private TextField phoneCustomerText;
-
-    @FXML
-    private Button timKiemButton;
 
     @FXML
     private TextField timKiemText;
@@ -141,28 +136,45 @@ public class selectCustomerController {
         rootPane.getChildren().clear();
         rootPane.getChildren().add(roomBookingPane);
     }
-    @FXML
-    public void handleTimKiem() {
-        String keyword = timKiemText.getText().trim().toLowerCase();
-        ArrayList<Customer> filteredList = new ArrayList<>();
+    /**
+     * Sets up real-time search functionality for the customer table
+     */
+    private void setupSearchFunction() {
+        // Add listener to search text field to filter results as user types
+        timKiemText.textProperty().addListener((observable, oldValue, newValue) -> {
+            filterCustomers(newValue);
+        });
+    }
 
-        // Nếu từ khóa rỗng, hiển thị toàn bộ danh sách
-        if (keyword.isEmpty()) {
+    /**
+     * Filters customers based on search keyword
+     */
+    private void filterCustomers(String keyword) {
+        if (keyword == null) {
+            keyword = "";
+        }
+
+        // Convert to lowercase for case-insensitive search
+        String searchTerm = keyword.trim().toLowerCase();
+
+        // If search term is empty, show all customers
+        if (searchTerm.isEmpty()) {
             tableCustomer.setItems(FXCollections.observableArrayList(listCustomer));
             return;
         }
 
-        // Lọc danh sách khách hàng theo từ khóa
+        // Filter the customer list
+        ArrayList<Customer> filteredList = new ArrayList<>();
         for (Customer customer : listCustomer) {
-            if (customer.getId().toLowerCase().contains(keyword) ||
-                    customer.getName().toLowerCase().contains(keyword) ||
-                    customer.getEmail().toLowerCase().contains(keyword) ||
-                    customer.getPhone().toLowerCase().contains(keyword)) {
+            if (customer.getId().toLowerCase().contains(searchTerm) ||
+                    customer.getName().toLowerCase().contains(searchTerm) ||
+                    customer.getEmail().toLowerCase().contains(searchTerm) ||
+                    customer.getPhone().toLowerCase().contains(searchTerm)) {
                 filteredList.add(customer);
             }
         }
 
-        // Cập nhật TableView với danh sách đã lọc
+        // Update table view with filtered results
         tableCustomer.setItems(FXCollections.observableArrayList(filteredList));
     }
 
@@ -192,6 +204,7 @@ public class selectCustomerController {
                 boolean success = cusDao.updateRoomBooking(customer);
                 if (success) {
                     al.showInfoAlert("Cập nhật thông tin khách hàng thành công!");
+                    AuditLogController.getAuditLog("KhachHang", customer.getId(), "Cập nhật thông tin khách hàng "+customer.getName(), "Nhân viên");
                     tableCustomer.refresh(); // Làm mới TableView
                 } else {
                     al.showErrorAlert("Cập nhật cơ sở dữ liệu thất bại!");
@@ -213,6 +226,7 @@ public class selectCustomerController {
             listCustomer.add(customer);
             tableCustomer.setItems(FXCollections.observableArrayList(listCustomer));
             al.showInfoAlert("Thêm khách hàng thành công!");
+            AuditLogController.getAuditLog("KhachHang", customer.getId(), "Thêm khách hàng "+customer.getName(), "Nhân viên");
             autoID();
             nameCustomerText.clear();
             emailCustomerText.clear();
@@ -226,5 +240,6 @@ public class selectCustomerController {
         autoID();
         dataTable();
         layRowTable();
+        setupSearchFunction();
     }
 }

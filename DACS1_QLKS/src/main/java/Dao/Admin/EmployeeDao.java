@@ -17,12 +17,11 @@ public class EmployeeDao {
 
     // Lấy danh sách tất cả nhân viên
     public List<Employee> getAllEmployees() {
-        JDBC.getConnection();
+        conn=JDBC.getConnection();
         List<Employee> list = new ArrayList<>();
         String sql = "SELECT * FROM employee";
         try (PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
-
             while (rs.next()) {
                 Employee emp = new Employee();
                 emp.setId(rs.getString("employeeID"));
@@ -32,8 +31,7 @@ public class EmployeeDao {
                 emp.setGender(rs.getString("gender"));
                 emp.setBirth(rs.getDate("birth").toLocalDate());
                 emp.setHireDate(rs.getDate("hireDate").toLocalDate());
-                emp.setDiaChi(""); // Nếu bạn cần địa chỉ, thêm cột 'address' vào bảng
-                emp.setIdNumber(""); // Nếu cần số CCCD, thêm cột 'idNumber' vào bảng
+                emp.setPosition(rs.getString("position")); // Nếu có trường 'position' trong model thì thêm setPosition()
                 list.add(emp);
             }
             conn.close();
@@ -55,7 +53,7 @@ public class EmployeeDao {
             ps.setString(5, emp.getGender());
             ps.setDate(6, Date.valueOf(emp.getBirth()));
             ps.setDate(7, Date.valueOf(emp.getHireDate()));
-            ps.setString(8, ""); // Nếu có trường 'position' trong model thì thêm setPosition()
+            ps.setString(8, emp.getPosition()); // Nếu có trường 'position' trong model thì thêm setPosition()
             int ans= ps.executeUpdate();
             conn.close();
             return ans > 0;
@@ -67,6 +65,7 @@ public class EmployeeDao {
 
     // Cập nhật thông tin nhân viên
     public boolean updateEmployee(Employee emp) {
+        conn=JDBC.getConnection();
         String sql = "UPDATE employee SET name=?, email=?, phone=?, gender=?, birth=?, hireDate=?, position=? WHERE employeeID=?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, emp.getName());
@@ -75,7 +74,7 @@ public class EmployeeDao {
             ps.setString(4, emp.getGender());
             ps.setDate(5, Date.valueOf(emp.getBirth()));
             ps.setDate(6, Date.valueOf(emp.getHireDate()));
-            ps.setString(7, ""); // position
+            ps.setString(7, emp.getPosition()); // position
             ps.setString(8, emp.getId());
             int ans = ps.executeUpdate();
             conn.close();
@@ -88,6 +87,7 @@ public class EmployeeDao {
 
     // Xóa nhân viên theo ID
     public boolean deleteEmployee(String employeeID) {
+        conn=JDBC.getConnection();
         String sql = "DELETE FROM employee WHERE employeeID=?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, employeeID);
@@ -113,8 +113,7 @@ public class EmployeeDao {
                 emp.setGender(rs.getString("gender"));
                 emp.setBirth(rs.getDate("birth").toLocalDate());
                 emp.setHireDate(rs.getDate("hireDate").toLocalDate());
-                emp.setDiaChi(""); // nếu có cột 'address' thì lấy thêm
-                emp.setIdNumber(""); // nếu có cột 'idNumber' thì lấy thêm
+                emp.setPosition(rs.getString("position")); // Nếu có trường 'position' trong model thì thêm setPosition()
                 return emp;
             }
         } catch (SQLException e) {
@@ -122,5 +121,20 @@ public class EmployeeDao {
         }
         return null;
     }
-
+    public List<String> getAllEmployeeIDs() {
+        conn = JDBC.getConnection();
+        List<String> employeeIDs = new ArrayList<>();
+        String sql = "SELECT employeeID FROM employee";
+        try (PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                employeeIDs.add(rs.getString("employeeID"));
+            }
+            conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return employeeIDs;
+    }
 }

@@ -145,7 +145,7 @@ public class CustomerDao implements DaoInterface<Customer> {
     }
 
     public Customer searchById(String id) {
-        String sql = "SELECT customerID, name, phone, email FROM customers WHERE customerID = ?";
+        String sql = "SELECT * FROM customers WHERE customerID = ?";
         try (Connection con = JDBC.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, id);
             try (ResultSet rs = ps.executeQuery()) {
@@ -153,8 +153,19 @@ public class CustomerDao implements DaoInterface<Customer> {
                     Customer customer = new Customer();
                     customer.setId(rs.getString("customerID"));
                     customer.setName(rs.getString("name"));
-                    customer.setPhone(rs.getString("phone"));
+                    customer.setGender(rs.getString("gender"));
+
+                    Date sqlDate = rs.getDate("birthDate");
+                    if (sqlDate != null) {
+                        customer.setBirth(sqlDate.toLocalDate());
+                    }
+
+                    customer.setIdNumber(rs.getString("idNumber"));
+                    customer.setDiaChi(rs.getString("address"));
                     customer.setEmail(rs.getString("email"));
+                    customer.setPhone(rs.getString("phone"));
+                    customer.setStatus(rs.getString("status"));
+
                     return customer;
                 }
             }

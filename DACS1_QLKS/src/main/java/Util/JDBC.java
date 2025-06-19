@@ -8,7 +8,7 @@ public class JDBC {
         try {
             com.mysql.cj.jdbc.Driver driver = new com.mysql.cj.jdbc.Driver();
             DriverManager.registerDriver(driver);
-            String url = "jdbc:mysql://localhost/dacs1?useUnicode=true&characterEncoding=UTF-8";
+            String url = "jdbc:mysql://localhost/hotel_dacs1?useUnicode=true&characterEncoding=UTF-8";
             String user = "root";
             String password = "";
             c = DriverManager.getConnection(url, user, password);

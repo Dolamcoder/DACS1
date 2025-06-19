@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon?>
+<?import java.net.URL?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
@@ -11,13 +13,16 @@
 
 <AnchorPane prefHeight="541.0" prefWidth="902.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.Employee.CheckoutController">
    <children>
-      <Label layoutX="429.0" layoutY="40.0" text="Check - out" textFill="#25608d">
+      <Label layoutX="429.0" layoutY="40.0" text="CHECK-OUT" textFill="#25608d">
          <font>
             <Font name="System Bold" size="22.0" />
          </font>
       </Label>
       <Line endX="100.0" layoutX="481.0" layoutY="89.0" startX="-100.0" stroke="#204d80" />
-      <Button fx:id="checkout" layoutX="450.0" layoutY="502.0" mnemonicParsing="false" onAction="#setupCheckoutButton" stylesheets="@../../Css/RoomBooking.css" text="Check - out" />
+      <Button fx:id="checkout" layoutX="431.0" layoutY="502.0" mnemonicParsing="false" onAction="#setupCheckoutButton" text="Check - out">
+         <graphic>
+            <FontAwesomeIcon glyphName="SIGN_OUT" size="1.5em" />
+         </graphic></Button>
       <TableView fx:id="table" layoutX="33.0" layoutY="127.0" prefHeight="366.0" prefWidth="855.0">
          <columns>
             <TableColumn fx:id="bookingID" prefWidth="88.0" text="BookingID" />
@@ -31,4 +36,8 @@
       </TableView>
       <TextField fx:id="timKiemText" layoutX="739.0" layoutY="96.0" />
    </children>
+   <stylesheets>
+      <URL value="@../../Css/listRoomCss.css" />
+      <URL value="@../../Css/HomeEmployee.css" />
+   </stylesheets>
 </AnchorPane>

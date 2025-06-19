@@ -11,8 +11,7 @@
     import javafx.scene.control.*;
     import javafx.scene.control.cell.PropertyValueFactory;
     import javafx.scene.input.MouseEvent;
-    import javafx.scene.input.KeyEvent;
-    import Alert.alert;
+    import Alert.Alert;
     import regex.InputValidator;
 
     import java.time.LocalDate;
@@ -22,7 +21,7 @@
     import java.util.Set;
     import java.util.stream.Collectors;
     public class CheckinController {
-        alert al;
+        Alert al;
         RoomBookingDao rdao;
         Booking booking;
         CustomerDao cDao;
@@ -31,7 +30,7 @@
         StayHistoryDao stayDao;
 
         public CheckinController() {
-            al = new alert();
+            al = new Alert();
             rdao = new RoomBookingDao();
             cDao = new CustomerDao();
             stayDao=new StayHistoryDao();
@@ -151,7 +150,6 @@
 
         // Add this field at the top of the class
         private InputValidator validator = new InputValidator();
-
         // Modify the getCustomerFromForm method to include validation
         private Customer getCustomerFromForm() {
             if (isEmpty(nameText) || isEmpty(email) || isEmpty(phone)
@@ -172,7 +170,6 @@
                 al.showErrorAlert("Số điện thoại không hợp lệ. Vui lòng kiểm tra lại.");
                 return null;
             }
-
             Customer customer = new Customer();
             customer.setName(nameText.getText());
             customer.setEmail(email.getText());
@@ -222,7 +219,6 @@
             Customer customer = getCustomerFromForm();
             if (customer == null) return;
             customer.setId(booking.getCustomerId());
-
             Task<Boolean> checkInTask = new Task<>() {
                 @Override
                 protected Boolean call() {
@@ -396,11 +392,12 @@
                     boolean success = rdao.updateBookingStatus(booking.getBookingId(), "Đã hủy");
                     updateProgress(1, 1);
                     boolean success2=roomDao.updateStatus(booking.getRoomId(), 1);
+                    Customer customer = cDao.searchById(booking.getCustomerId());
+                    boolean success3 = cDao.updateCustomerStatus(customer.getId(), "Đã huỷ");
                     javafx.application.Platform.runLater(() -> {
                         tienTrinh.progressProperty().unbind();
                         tienTrinh.setProgress(0);
-
-                        if (success && success2) {
+                        if (success && success2 && success3) {
                             al.showInfoAlert("Hủy đặt phòng thành công");
                             AuditLogController.getAuditLog("booking", booking.getBookingId(), "Hủy đặt phòng", LoginController.account.getName());
                             bookingList.remove(booking);

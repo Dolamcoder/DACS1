@@ -10,7 +10,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import Alert.alert;
+import Alert.Alert;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -18,7 +18,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class CheckoutController {
-
     @FXML
     private TableView<Booking> table;
     @FXML
@@ -43,7 +42,7 @@ public class CheckoutController {
     private final RoomBookingDao bookingDao = new RoomBookingDao();
     private ObservableList<Booking> bookingList = FXCollections.observableArrayList();
     private List<Booking> dangOlist = new ArrayList<>();
-    private final alert al = new alert();
+    private final Alert al = new Alert();
     private final CustomerDao cDao = new CustomerDao();
     private final RoomDao rDao = new RoomDao();
     ServiceBookingDao serviceBookingDao = new ServiceBookingDao();
@@ -101,7 +100,7 @@ public class CheckoutController {
         }
 
         // Tạo hộp thoại xác nhận
-        Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
+        javafx.scene.control.Alert confirmAlert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.CONFIRMATION);
         confirmAlert.setTitle("Xác nhận Check-out");
         confirmAlert.setHeaderText(null);
         confirmAlert.setContentText("Bạn có chắc chắn muốn check-out không?");
@@ -140,7 +139,6 @@ public class CheckoutController {
             return;
         }
     }
-
     private void setupSearchListener() {
         timKiemText.textProperty().addListener((observable, oldValue, newValue) -> {
             String keyword = newValue.toLowerCase().trim();

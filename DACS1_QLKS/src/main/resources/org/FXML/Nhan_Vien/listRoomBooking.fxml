@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon?>
+<?import java.lang.String?>
+<?import java.net.URL?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ProgressBar?>
@@ -7,10 +10,13 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.paint.LinearGradient?>
+<?import javafx.scene.paint.Stop?>
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="rootPane" minHeight="541.0" minWidth="902.0" prefHeight="541.0" prefWidth="902.0" styleClass="root" stylesheets="@../../Css/RoomBooking.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.Employee.ListRoomBookingController">
+<AnchorPane fx:id="rootPane" minHeight="541.0" minWidth="902.0" prefHeight="541.0" prefWidth="902.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.Employee.ListRoomBookingController">
     <children>
         <Label layoutX="385.0" layoutY="14.0" prefHeight="42.0" prefWidth="224.0" text="DANH SÁCH ĐẶT PHÒNG">
             <font>
@@ -22,10 +28,39 @@
 
         <ProgressBar fx:id="progressBar" layoutX="14.0" layoutY="510.0" prefHeight="18.0" prefWidth="874.0" progress="0.0" />
 
-        <Button fx:id="saveButton" layoutX="187.0" layoutY="466.0" mnemonicParsing="false" onAction="#saveBookingList" prefHeight="31.0" prefWidth="130.0" stylesheets="@../../Css/RoomBooking.css" text="Lưu Danh Sách" />
-        <Button fx:id="checkInvoiceButton" layoutX="345.0" layoutY="466.0" mnemonicParsing="false" onAction="#checkInvoice" prefHeight="31.0" prefWidth="130.0" stylesheets="@../../Css/RoomBooking.css" text="Kiểm Tra Hóa Đơn" />
-        <Button fx:id="updateButton" layoutX="503.0" layoutY="466.0" mnemonicParsing="false" onAction="#updateBooking" prefHeight="31.0" prefWidth="130.0" stylesheets="@../../Css/RoomBooking.css" text="Cập Nhật" />
-        <Button fx:id="removeButton" layoutX="661.0" layoutY="466.0" mnemonicParsing="false" onAction="#removeBooking" prefHeight="31.0" prefWidth="130.0" stylesheets="@../../Css/RoomBooking.css" text="Xóa" />
+        <Button fx:id="saveButton" layoutX="139.0" layoutY="466.0" mnemonicParsing="false" onAction="#saveBookingList" prefHeight="33.0" prefWidth="158.0" text="Lưu Danh Sách">
+         <graphic>
+            <FontAwesomeIcon glyphName="SAVE" selectionStart="0" size="1.5em">
+               <selectionFill>
+                  <LinearGradient endX="1.0" endY="1.0">
+                     <stops>
+                        <Stop>
+                           <color>
+                              <Color red="0.9882352948188782" green="0.9725490212440491" blue="0.9725490212440491" />
+                           </color>
+                        </Stop>
+                        <Stop offset="1.0">
+                           <color>
+                              <Color red="1.0" green="1.0" blue="1.0" />
+                           </color>
+                        </Stop>
+                     </stops>
+                  </LinearGradient>
+               </selectionFill>
+            </FontAwesomeIcon>
+         </graphic></Button>
+        <Button fx:id="checkInvoiceButton" layoutX="319.0" layoutY="467.0" mnemonicParsing="false" onAction="#checkInvoice" prefHeight="32.0" prefWidth="158.0" text="Kiểm Tra Hóa Đơn">
+         <graphic>
+            <FontAwesomeIcon glyphName="EYE" />
+         </graphic></Button>
+        <Button fx:id="updateButton" layoutX="503.0" layoutY="466.0" mnemonicParsing="false" onAction="#updateBooking" prefHeight="31.0" prefWidth="130.0" text="Cập Nhật">
+         <graphic>
+            <FontAwesomeIcon glyphName="REFRESH" size="1.5em" text="" />
+         </graphic></Button>
+        <Button fx:id="removeButton" layoutX="661.0" layoutY="466.0" mnemonicParsing="false" onAction="#removeBooking" prefHeight="31.0" prefWidth="130.0" text="Xóa">
+         <graphic>
+            <FontAwesomeIcon glyphName="TRASH" size="1.5em" />
+         </graphic></Button>
       <TableView fx:id="table" layoutX="16.0" layoutY="95.0" prefHeight="358.0" prefWidth="874.0">
          <columns>
             <TableColumn fx:id="bookingIdColumn" prefWidth="88.0" text="BookingID" />
@@ -38,4 +73,12 @@
          </columns>
       </TableView>
     </children>
+   <styleClass>
+      <String fx:value="root" />
+      <String fx:value="top_panel" />
+   </styleClass>
+   <stylesheets>
+      <URL value="@../../Css/HomeEmployee.css" />
+      <URL value="@../../Css/listRoomCss.css" />
+   </stylesheets>
 </AnchorPane>

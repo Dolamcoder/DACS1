@@ -3,7 +3,7 @@ package Controller.Admin;
 import Dao.Admin.EmployeeDao;
 import Dao.DangNhap.LoginDao;
 import Model.Account;
-import Alert.alert;
+import Alert.Alert;
 import Model.Employee;
 import encryption.maHoaMatKhau;
 import javafx.collections.FXCollections;
@@ -25,7 +25,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class ListAccount implements Initializable {
+public class ListAccountController implements Initializable {
 
     @FXML
     private Button addButton;
@@ -86,7 +86,7 @@ public class ListAccount implements Initializable {
     private LoginDao loginDao;
     private ObservableList<Account> accountList = FXCollections.observableArrayList();
     private ObservableList<String> employIDList = FXCollections.observableArrayList();
-    private alert al=new alert();
+    private Alert al=new Alert();
     private ObservableList<String>  chucVuList;
     EmployeeDao empDao=new EmployeeDao();
     @Override
@@ -117,6 +117,7 @@ public class ListAccount implements Initializable {
     private void loadAccounts() {
         accountList.clear();
         List<Account> accounts = loginDao.getAllAccounts();
+        System.out.println("Loaded accounts: " + accounts.size());
         accountList.addAll(accounts);
         accountTable.setItems(accountList);
     }
@@ -327,11 +328,21 @@ public class ListAccount implements Initializable {
         String selectedEmployeeId = employIDCombobox.getValue();
         if (selectedEmployeeId != null && !selectedEmployeeId.isEmpty()) {
             Employee employee = empDao.findEmployeeById(selectedEmployeeId);
+            Account account=loginDao.findAccountByEmployeeId(selectedEmployeeId);
             if (employee != null) {
                 nameText.setText(employee.getName());
                 emailText.setText(employee.getEmail());
                 passwordText.clear();
-                usernameText.clear(); // Assuming employee ID is used as username
+                usernameText.clear();
+                if(account!=null){
+                    usernameText.setText(account.getUserName());
+                    passwordText.setText(account.getPassword());
+                    chucVu.setValue(account.convertRoleToString());
+                } else {
+                    usernameText.clear();
+                    passwordText.clear();
+                    chucVu.setValue("Nhân viên");
+                }
             } else {
                 al.showErrorAlert("Không tìm thấy thông tin nhân viên!");
             }

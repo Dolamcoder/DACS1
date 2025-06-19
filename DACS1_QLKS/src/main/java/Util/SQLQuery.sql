@@ -1,4 +1,4 @@
-
+-- Bảng loại phòng
 CREATE TABLE room_type (
     loaiPhong CHAR(2) PRIMARY KEY,
     tenLoaiPhong VARCHAR(50) NOT NULL,
@@ -8,7 +8,7 @@ CREATE TABLE room_type (
     moTa TEXT
 );
 
--- Tạo bảng room
+-- Bảng phòng
 CREATE TABLE room (
     roomID VARCHAR(10) PRIMARY KEY,
     number INT NOT NULL,
@@ -16,9 +16,11 @@ CREATE TABLE room (
     price DOUBLE NOT NULL,
     status INT NOT NULL CHECK (status IN (1, 2, 3, 4)),
     FOREIGN KEY (loaiPhong) REFERENCES room_type(loaiPhong)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE
 );
 
--- Tạo bảng customers
+-- Bảng khách hàng
 CREATE TABLE customers (
     customerID VARCHAR(10) PRIMARY KEY,
     name VARCHAR(100),
@@ -28,19 +30,22 @@ CREATE TABLE customers (
     address TEXT,
     email VARCHAR(100),
     phone VARCHAR(20),
-    status varchar(40)
+    status VARCHAR(40)
 );
 
--- Tạo bảng card_levels
+-- Bảng cấp độ thẻ thành viên
 CREATE TABLE card_levels (
     stt INT PRIMARY KEY AUTO_INCREMENT,
     customerID VARCHAR(10),
     levelName VARCHAR(50),
-    totalAmount double,
+    totalAmount DOUBLE,
     description TEXT,
     FOREIGN KEY (customerID) REFERENCES customers(customerID)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE
 );
--- Tạo bảng stay_history
+
+-- Bảng lịch sử lưu trú
 CREATE TABLE stay_history (
     stt INT PRIMARY KEY AUTO_INCREMENT,
     customerID VARCHAR(10),
@@ -48,10 +53,15 @@ CREATE TABLE stay_history (
     checkIn DATE,
     checkOut DATE,
     note TEXT,
-    FOREIGN KEY (customerID) REFERENCES customers(customerID),
+    FOREIGN KEY (customerID) REFERENCES customers(customerID)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE,
     FOREIGN KEY (roomID) REFERENCES room(roomID)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE
 );
--- Tạo bảng booking
+
+-- Bảng đặt phòng
 CREATE TABLE booking (
     bookingID VARCHAR(10) PRIMARY KEY,
     roomID VARCHAR(10),
@@ -60,25 +70,15 @@ CREATE TABLE booking (
     checkOutDate DATE,
     createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
     status VARCHAR(50) CHECK (status IN ('Đã xác nhận', 'Đã hủy', 'Đang ở', 'Hết hạn thanh toán', 'Đã thanh toán')),
-    FOREIGN KEY (roomID) REFERENCES room(roomID),
+    FOREIGN KEY (roomID) REFERENCES room(roomID)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE,
     FOREIGN KEY (customerID) REFERENCES customers(customerID)
-);
-
--- Tạo bảng account
-CREATE TABLE account (
-    stt INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(50),
-    password VARCHAR(255),
-    name VARCHAR(100),
-    email VARCHAR(50),
-    role INT CHECK (role IN (1, 2)),
-    EmployeeID VARCHAR(10),
-    UNIQUE (EmployeeID),
-    FOREIGN KEY (EmployeeID) REFERENCES Employee(employeeID)
         ON DELETE SET NULL
         ON UPDATE CASCADE
 );
--- Tạo bảng employee
+
+-- Bảng nhân viên
 CREATE TABLE employee (
     employeeID VARCHAR(10) PRIMARY KEY,
     name VARCHAR(100),
@@ -90,33 +90,45 @@ CREATE TABLE employee (
     position VARCHAR(200)
 );
 
--- Tạo bảng salary
+-- Bảng tài khoản
+CREATE TABLE account (
+    stt INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50),
+    password VARCHAR(255),
+    name VARCHAR(100),
+    email VARCHAR(50),
+    role INT CHECK (role IN (1, 2)),
+    EmployeeID VARCHAR(10),
+    UNIQUE (EmployeeID),
+    FOREIGN KEY (EmployeeID) REFERENCES employee(employeeID)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE
+);
+
+-- Bảng lương
 CREATE TABLE salary (
     salaryID INT PRIMARY KEY AUTO_INCREMENT,
     employeeID VARCHAR(10),
     amount DOUBLE,
-    allowance double,
-    transportAllowance double,
+    transportAllowance DOUBLE,
     FOREIGN KEY (employeeID) REFERENCES employee(employeeID)
-        ON DELETE CASCADE
+        ON DELETE SET NULL
         ON UPDATE CASCADE
 );
 
--- Tạo bảng employee_review
+-- Bảng đánh giá nhân viên
 CREATE TABLE employee_review (
     reviewID INT PRIMARY KEY AUTO_INCREMENT,
     employeeID VARCHAR(10),
     reviewDate DATE,
-    rating VARCHAR(20) CHECK (rating IN ('Tích cực', 'Tiêu cực', 'Trung bình')),
+    rating_score int,
     comments TEXT,
     bonusAmount DOUBLE DEFAULT 0,
     FOREIGN KEY (employeeID) REFERENCES employee(employeeID)
-        ON DELETE CASCADE
+        ON DELETE SET NULL
         ON UPDATE CASCADE
 );
-
-
--- Tạo bảng service
+-- Bảng dịch vụ
 CREATE TABLE service (
     serviceID INT PRIMARY KEY,
     name VARCHAR(100),
@@ -124,23 +136,31 @@ CREATE TABLE service (
     description TEXT
 );
 
--- Tạo bảng servicebooking
+-- Bảng đặt dịch vụ
 CREATE TABLE servicebooking (
     serviceBookingID VARCHAR(10) PRIMARY KEY,
     roomID VARCHAR(10),
     quantity INT,
-    totalAmount decimal(10,2),
+    totalAmount DECIMAL(10, 2),
     FOREIGN KEY (roomID) REFERENCES room(roomID)
-);
-CREATE TABLE ServiceBookingDetail (
-  	stt INT AUTO_INCREMENT PRIMARY KEY,  	 -- STT tự động tăng
-    ServiceBookingID VARCHAR(10),              -- FK đến đơn đặt
-    ServiceID INT,                             -- FK đến dịch vụ
-    FOREIGN KEY (ServiceBookingID) REFERENCES ServiceBooking(ServiceBookingID),
-    FOREIGN KEY (ServiceID) REFERENCES Service(ServiceID)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE
 );
 
--- Tạo bảng invoice
+-- Bảng chi tiết đặt dịch vụ
+CREATE TABLE ServiceBookingDetail (
+    stt INT AUTO_INCREMENT PRIMARY KEY,
+    ServiceBookingID VARCHAR(10),
+    ServiceID INT,
+    FOREIGN KEY (ServiceBookingID) REFERENCES servicebooking(ServiceBookingID)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE,
+    FOREIGN KEY (ServiceID) REFERENCES service(ServiceID)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE
+);
+
+-- Bảng hóa đơn
 CREATE TABLE invoice (
     invoiceID VARCHAR(10) PRIMARY KEY,
     bookingID VARCHAR(10),
@@ -149,11 +169,16 @@ CREATE TABLE invoice (
     tax DOUBLE DEFAULT 0,
     discount DOUBLE DEFAULT 0,
     issueDate DATE,
-    status varchar(50),
-    FOREIGN KEY (bookingID) REFERENCES booking(bookingID),
-    FOREIGN KEY (ServiceBookingID) REFERENCES ServiceBooking(ServiceBookingID)
+    status VARCHAR(50),
+    FOREIGN KEY (bookingID) REFERENCES booking(bookingID)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE,
+    FOREIGN KEY (ServiceBookingID) REFERENCES servicebooking(ServiceBookingID)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE
 );
--- Tạo bảng audit_log
+
+-- Bảng log hệ thống
 CREATE TABLE audit_log (
     logID INT PRIMARY KEY AUTO_INCREMENT,
     tableName VARCHAR(50),
@@ -162,6 +187,7 @@ CREATE TABLE audit_log (
     actionBy VARCHAR(50),
     actionAt DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+
 -- bản ghi
 INSERT INTO room_type (loaiPhong, tenLoaiPhong, soGiuong, sucChua, kichThuoc, moTa) VALUES
 ('DB', 'Double Bed', 1, 2, 25.0, 'Phòng có một giường đôi, thích hợp cho 2 người lớn.'),

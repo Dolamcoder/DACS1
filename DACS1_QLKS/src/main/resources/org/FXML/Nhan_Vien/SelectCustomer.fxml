@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon?>
+<?import java.net.URL?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
@@ -9,7 +11,7 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="rootPane" minHeight="541.0" minWidth="902.0" prefHeight="541.0" prefWidth="902.0" styleClass="root" stylesheets="@../../Css/RoomBooking.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.Employee.selectCustomerController">
+<AnchorPane fx:id="rootPane" minHeight="541.0" minWidth="902.0" prefHeight="541.0" prefWidth="902.0" styleClass="root" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.Employee.selectCustomerController">
    <children>
       <Label layoutX="339.0" layoutY="14.0" prefHeight="32.0" prefWidth="223.0" text="CHỌN KHÁCH HÀNG">
          <font>
@@ -41,7 +43,7 @@
          </font>
       </Label>
       <TextField fx:id="emailCustomerText" layoutX="155.0" layoutY="209.0" prefHeight="25.0" prefWidth="195.0" />
-      <TableView fx:id="tableCustomer" layoutX="374.0" layoutY="88.0" onMouseClicked="#layRowTable" prefHeight="434.0" prefWidth="521.0" stylesheets="@../../Css/RoomBooking.css">
+      <TableView fx:id="tableCustomer" layoutX="374.0" layoutY="88.0" onMouseClicked="#layRowTable" prefHeight="434.0" prefWidth="521.0">
          <columns>
             <TableColumn fx:id="idColum" prefWidth="111.0" text="ID Khách Hàng" />
             <TableColumn fx:id="nameColum" prefWidth="170.0" text="Tên Khách Hàng" />
@@ -49,11 +51,24 @@
             <TableColumn fx:id="emailColum" prefWidth="142.0" text="Email" />
          </columns>
       </TableView>
-      <TextField fx:id="timKiemText" layoutX="657.0" layoutY="60.0" />
-      <Button fx:id="timKiemButton" layoutX="815.0" layoutY="56.0" mnemonicParsing="false" onAction="#handleTimKiem" prefHeight="25.0" prefWidth="80.0" stylesheets="@../../Css/RoomBooking.css" text="Tìm kiếm" />
+      <TextField fx:id="timKiemText" layoutX="739.0" layoutY="57.0" />
       <Line endX="11.0" endY="234.0" layoutX="350.0" layoutY="306.0" startX="11.0" startY="-213.0" />
-      <Button fx:id="addButton" layoutX="175.0" layoutY="263.0" mnemonicParsing="false" onAction="#addButton" prefHeight="29.0" prefWidth="64.0" stylesheets="@../../Css/RoomBooking.css" text="Add" />
-      <Button fx:id="updateButton" layoutX="253.0" layoutY="263.0" mnemonicParsing="false" onAction="#handleUpdate" prefHeight="29.0" prefWidth="80.0" stylesheets="@../../Css/RoomBooking.css" text="Update" />
-      <Button fx:id="datPhongButton" layoutX="249.0" layoutY="497.0" mnemonicParsing="false" onAction="#handleDatPhong" prefHeight="29.0" prefWidth="101.0" text="Đặt Phòng" />
+      <Button fx:id="addButton" layoutX="155.0" layoutY="263.0" mnemonicParsing="false" onAction="#addButton" prefHeight="31.0" prefWidth="74.0" text="Add">
+         <graphic>
+            <FontAwesomeIcon glyphName="PLUS" size="1.5em" wrappingWidth="14.5" />
+         </graphic></Button>
+      <Button fx:id="updateButton" layoutX="250.0" layoutY="263.0" mnemonicParsing="false" onAction="#handleUpdate" prefHeight="31.0" prefWidth="95.0" text="Update">
+         <graphic>
+            <FontAwesomeIcon glyphName="REFRESH" size="1.5em" />
+         </graphic>
+      </Button>
+      <Button fx:id="datPhongButton" layoutX="229.0" layoutY="497.0" mnemonicParsing="false" onAction="#handleDatPhong" prefHeight="31.0" prefWidth="121.0" text="Đặt Phòng">
+         <graphic>
+            <FontAwesomeIcon glyphName="BED" size="1.5em" wrappingWidth="26.0" />
+         </graphic></Button>
    </children>
+   <stylesheets>
+      <URL value="@../../Css/listRoomCss.css" />
+      <URL value="@../../Css/HomeEmployee.css" />
+   </stylesheets>
 </AnchorPane>

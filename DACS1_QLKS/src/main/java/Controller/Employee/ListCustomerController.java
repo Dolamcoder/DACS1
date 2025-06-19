@@ -1,5 +1,7 @@
 package Controller.Employee;
 
+import Controller.Admin.AuditLogController;
+import Controller.Login.LoginController;
 import Dao.Employee.CardLevelDao;
 import Dao.Employee.CustomerDao;
 import Dao.Employee.StayHistoryDao;
@@ -30,13 +32,10 @@ import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.ResourceBundle;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import Alert.alert;
+import Alert.Alert;
 public class ListCustomerController implements Initializable {
 
     @FXML
@@ -79,7 +78,7 @@ public class ListCustomerController implements Initializable {
     private FilteredList<Customer> filteredCustomers;
     private boolean operationInProgress = false;
     private Timer progressTimer = null;
-    alert al=new alert();
+    Alert al=new Alert();
     StayHistoryDao stayHistoryDao=new StayHistoryDao();
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -201,62 +200,59 @@ public class ListCustomerController implements Initializable {
     }
 
     @FXML
-    public void deleteCustomer() {
-        Customer selectedCustomer = customerTable.getSelectionModel().getSelectedItem();
-        if (selectedCustomer == null) {
+    public void deleteCustomer(){
+        Customer customer= customerTable.getSelectionModel().getSelectedItem();
+        if(customer==null){
             al.showErrorAlert("Vui lòng chọn khách hàng để xóa");
             return;
         }
-
-        // Chỉ cho phép xóa khách hàng đi cùng (không có email)
-        boolean hasNoEmail = selectedCustomer.getEmail() == null || selectedCustomer.getEmail().trim().isEmpty();
-        if (!hasNoEmail) {
-            al.showErrorAlert("Chỉ được phép xóa khách hàng đi cùng (không có email)");
+        if(customer.getStatus().equals("Đang ở")  || customer.getStatus().equals("Vừa đặt phòng")){
+            al.showErrorAlert("Không thể xóa khách hàng đang ở trong khách sạn hoặc vừa đặt phòng");
             return;
         }
+        // Hộp thoại xác nhận
+        javafx.scene.control.Alert confirmAlert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.CONFIRMATION);
+        confirmAlert.setTitle("Xác nhận xóa");
+        confirmAlert.setHeaderText("Bạn có chắc chắn muốn xóa khách hàng này không?");
+        confirmAlert.setContentText("Thao tác này không thể hoàn tác.");
 
-        String message = "Bạn có chắc muốn xóa khách hàng đi cùng: " + selectedCustomer.getName() + "?";
-        message += "\nKhách hàng này không có email.";
+        // Hiển thị và chờ phản hồi
+        Optional<ButtonType> result = confirmAlert.showAndWait();
+        if (result.isEmpty() || result.get() != ButtonType.OK) {
+            return; // Người dùng chọn Cancel hoặc đóng dialog
+        }
 
-        Alert confirmDialog = new Alert(Alert.AlertType.CONFIRMATION, message, ButtonType.YES, ButtonType.NO);
-        confirmDialog.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.YES) {
-                startRealTimeProgress();
-                Task<Boolean> deleteTask = new Task<>() {
-                    @Override
-                    protected Boolean call() throws Exception {
-                        updateProgress(0.3, 1.0);
-                        Thread.sleep(200);
-                        updateProgress(0.6, 1.0);
-                        Thread.sleep(200);
-                        boolean stayhistoryDeleted = stayHistoryDao.deleteByCustomerID(selectedCustomer.getId());
-                        boolean result = customerDao.delete(selectedCustomer.getId());
-                        updateProgress(1.0, 1.0);
-                        return result;
-                    }
-                };
+        // Nếu người dùng xác nhận, tiến hành xóa
+        Task<Boolean> task = new Task<>() {
+            @Override
+            protected Boolean call() throws Exception {
+                updateProgress(0.5, 1.0);
+                boolean success = customerDao.delete(customer.getId());
+                updateProgress(1.0, 1.0);
+                return success;
+            }
+        };
 
-                progressBar.progressProperty().bind(deleteTask.progressProperty());
+        progressBar.progressProperty().bind(task.progressProperty());
 
-                deleteTask.setOnSucceeded(event -> {
-                    Boolean result = deleteTask.getValue();
-                    if (result) {
-                        loadCustomerData();
-                        al.showInfoAlert("Xóa khách hàng thành công");
-                    } else {
-                        al.showErrorAlert("Không thể xóa khách hàng");
-                    }
-                    stopRealTimeProgress();
-                });
+        task.setOnFailed(event -> {
+            stopRealTimeProgress();
+            al.showErrorAlert("Lỗi khi xoá: " + task.getException().getMessage());
+        });
 
-                deleteTask.setOnFailed(event -> {
-                    al.showErrorAlert("Lỗi khi xóa khách hàng: " + deleteTask.getException().getMessage());
-                    stopRealTimeProgress();
-                });
-
-                new Thread(deleteTask).start();
+        task.setOnSucceeded(event -> {
+            stopRealTimeProgress();
+            if (task.getValue()) {
+                al.showInfoAlert("Xoá thành công!");
+                customerList.remove(customer);
+                loadCustomerData();
+                AuditLogController.getAuditLog("Customer", customer.getId(), "Xoá khách hàng", LoginController.account.getName());
+            } else {
+                al.showErrorAlert("Xoá thất bại!");
             }
         });
+
+        new Thread(task).start();
     }
 
     @FXML
@@ -343,6 +339,7 @@ public class ListCustomerController implements Initializable {
         // Handle task completion
         task.setOnSucceeded(event -> {
             al.showInfoAlert("Xuất danh sách khách hàng thành công");
+            AuditLogController.getAuditLog("Customer", "Toàn bộ bản ghi", "Xuất danh sách khách hàng", LoginController.account.getName());
             finishRealTimeProgress();
         });
 
@@ -377,6 +374,7 @@ public class ListCustomerController implements Initializable {
             Boolean result = updateTask.getValue();
             if (result) {
                 al.showInfoAlert("Cập nhật khách hàng thành công");
+                AuditLogController.getAuditLog("Customer", selectedCustomer.getId(), "Cập nhật thông tin khách hàng", LoginController.account.getName());
             } else {
                 al.showErrorAlert("Không thể cập nhật khách hàng");
                 stopRealTimeProgress();

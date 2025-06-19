@@ -1,4 +1,6 @@
 package Controller.Employee;
+import Controller.Admin.AuditLogController;
+import Controller.Login.LoginController;
 import Dao.Employee.*;
 import Model.*;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -6,8 +8,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.util.StringConverter;
-import Alert.alert;
+import Alert.Alert;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -19,7 +20,7 @@ public class ServiceBookingController {
     CustomerDao cusDao = new CustomerDao();
     RoomBookingDao rDao = new RoomBookingDao();
     ServiceBookingDetailDao detailDao = new ServiceBookingDetailDao();
-    alert al = new alert();
+    Alert al = new Alert();
     double tongBill = 0;
     RoomDao roomDao=new RoomDao();
     String roomID;
@@ -223,6 +224,7 @@ private void handlePlaceServiceBooking() {
         return;
     }
     al.showInfoAlert("Đặt dịch vụ thành công");
+    AuditLogController.getAuditLog("ServiceBooking", servicebookingID, "Đặt dịch vụ cho phòng " + roomID, LoginController.account.getName());
     tongBill = 0;
     tongTien.setText("Tổng tiền: 0VNĐ");
 }

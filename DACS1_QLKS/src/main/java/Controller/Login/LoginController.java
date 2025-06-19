@@ -9,11 +9,11 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-import Alert.alert;
+import Alert.Alert;
 import java.io.IOException;
 
 public class LoginController {
-    private final alert al = new alert();
+    private final Alert al = new Alert();
     public static Account account;
     public LoginController() {
     }

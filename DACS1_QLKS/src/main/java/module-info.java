@@ -16,6 +16,7 @@ module org {
     requires org.apache.poi.ooxml;
     requires itextpdf;
     requires fontawesomefx;
+    requires java.desktop;
 
     opens View to javafx.fxml;
     exports View;
