@@ -1,218 +1,216 @@
 package Controller.Admin;
 
+import Alert.Alert;
+import Dao.Employee.InvoiceDao;
+import Dao.Employee.RoomBookingDao;
+import Dao.Employee.RoomDao;
+import Dao.Employee.ServiceBookingDao;
+import Model.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
-import java.net.URL;
-import java.text.DecimalFormat;
+import java.io.FileOutputStream;
+import java.sql.Date;
+import java.text.NumberFormat;
 import java.time.LocalDate;
-import java.time.Month;
-import java.time.format.DateTimeFormatter;
-import java.util.ResourceBundle;
+import java.util.*;
 
-public class ReportStatistics implements Initializable {
-
-    @FXML private BarChart<String, Number> revenueChart;
-    @FXML private CategoryAxis monthAxis;
-    @FXML private NumberAxis revenueAxis;
-    @FXML private TableView<MonthlyRevenue> summaryTable;
-    @FXML private TableColumn<MonthlyRevenue, String> monthColumn;
-    @FXML private TableColumn<MonthlyRevenue, String> roomRevColumn;
-    @FXML private TableColumn<MonthlyRevenue, String> serviceRevColumn;
-    @FXML private TableColumn<MonthlyRevenue, String> totalRevColumn;
-    @FXML private TableColumn<MonthlyRevenue, String> growthColumn;
-    @FXML private DatePicker startDatePicker;
+public class ReportStatistics {
     @FXML private DatePicker endDatePicker;
-    @FXML private ComboBox<String> reportTypeCombo;
+    @FXML private Button exportExcelBtn;
+    @FXML private Button generateReportBtn;
+    @FXML private TableColumn<MonthlyReport, String> growthColumn;
+    @FXML private CategoryAxis monthAxis;
+    @FXML private TableColumn<MonthlyReport, String> monthColumn;
+    @FXML private NumberAxis revenueAxis;
+    @FXML private BarChart<String, Number> revenueChart;
+    @FXML private TableColumn<MonthlyReport, String> roomRevColumn;
+    @FXML private TableColumn<MonthlyReport, String> serviceRevColumn;
+    @FXML private DatePicker startDatePicker;
+    @FXML private TableView<MonthlyReport> summaryTable;
+    @FXML private TableColumn<MonthlyReport, String> totalRevColumn;
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        // Set up date pickers with default values (last 6 months)
-        LocalDate endDate = LocalDate.now();
-        LocalDate startDate = endDate.minusMonths(5);
-        startDatePicker.setValue(startDate);
-        endDatePicker.setValue(endDate);
+    InvoiceDao invoiceDao = new InvoiceDao();
+    RoomBookingDao bookDao = new RoomBookingDao();
+    RoomDao roomDao = new RoomDao();
+    ServiceBookingDao serviceBookingDao = new ServiceBookingDao();
+    Alert alert = new Alert();
+    @FXML
+    void generateReport(ActionEvent event) {
+        if (startDatePicker.getValue() == null || endDatePicker.getValue() == null) return;
 
-        // Set up report type combo box
-        ObservableList<String> reportTypes = FXCollections.observableArrayList(
-                "Doanh thu phòng và dịch vụ",
-                "Tỷ lệ lấp đầy phòng",
-                "Hiệu suất nhân viên",
-                "Chi tiêu theo khu vực"
-        );
-        reportTypeCombo.setItems(reportTypes);
-        reportTypeCombo.getSelectionModel().selectFirst();
+        LocalDate start = startDatePicker.getValue().withDayOfMonth(1);
+        LocalDate end = endDatePicker.getValue().withDayOfMonth(1);
 
-        // Set up table columns
-        monthColumn.setCellValueFactory(new PropertyValueFactory<>("month"));
-        roomRevColumn.setCellValueFactory(new PropertyValueFactory<>("roomRevenue"));
-        serviceRevColumn.setCellValueFactory(new PropertyValueFactory<>("serviceRevenue"));
-        totalRevColumn.setCellValueFactory(new PropertyValueFactory<>("totalRevenue"));
-        growthColumn.setCellValueFactory(new PropertyValueFactory<>("growth"));
+        Map<String, Double> roomRevenueMap = getRoomRevenueByMonth();
+        Map<String, Double> serviceRevenueMap = getServiceRevenueByMonth();
 
-        // Load sample data
-        loadSampleData();
-    }
+        ObservableList<MonthlyReport> reportList = FXCollections.observableArrayList();
+        ObservableList<String> monthCategories = FXCollections.observableArrayList();
 
-    private void loadSampleData() {
-        // Create sample data for chart
         XYChart.Series<String, Number> roomSeries = new XYChart.Series<>();
         roomSeries.setName("Doanh thu phòng");
 
         XYChart.Series<String, Number> serviceSeries = new XYChart.Series<>();
         serviceSeries.setName("Doanh thu dịch vụ");
 
-        // Sample data for 3 months
-        roomSeries.getData().add(new XYChart.Data<>("Tháng 1", 245000000));
-        roomSeries.getData().add(new XYChart.Data<>("Tháng 2", 278000000));
-        roomSeries.getData().add(new XYChart.Data<>("Tháng 3", 310000000));
+        LocalDate current = start;
+        String prevMonth = null;
+        double prevTotal = 0.0;
 
-        serviceSeries.getData().add(new XYChart.Data<>("Tháng 1", 87000000));
-        serviceSeries.getData().add(new XYChart.Data<>("Tháng 2", 102000000));
-        serviceSeries.getData().add(new XYChart.Data<>("Tháng 3", 132000000));
+        while (!current.isAfter(end)) {
+            String monthKey = String.format("%02d-%d", current.getMonthValue(), current.getYear());
+            double roomRev = roomRevenueMap.getOrDefault(monthKey, 0.0);
+            double serviceRev = serviceRevenueMap.getOrDefault(monthKey, 0.0);
+            double totalRev = roomRev + serviceRev;
 
-        // Add data to chart
+            String growth = "-";
+            if (prevMonth != null && prevTotal > 0) {
+                double percent = ((totalRev - prevTotal) / prevTotal) * 100;
+                growth = String.format("%.2f%%", percent);
+            }
+
+            reportList.add(new MonthlyReport(monthKey, roomRev, serviceRev, totalRev, growth));
+            monthCategories.add(monthKey);
+
+            roomSeries.getData().add(new XYChart.Data<>(monthKey, roomRev));
+            serviceSeries.getData().add(new XYChart.Data<>(monthKey, serviceRev));
+
+            prevMonth = monthKey;
+            prevTotal = totalRev;
+
+            current = current.plusMonths(1);
+        }
+
+        monthAxis.setCategories(monthCategories);
+        monthAxis.setTickLabelRotation(0);
+        monthAxis.setTickLabelGap(10);
+
+        monthColumn.setCellValueFactory(new PropertyValueFactory<>("month"));
+        roomRevColumn.setCellValueFactory(new PropertyValueFactory<>("formattedRoomRevenue"));
+        serviceRevColumn.setCellValueFactory(new PropertyValueFactory<>("formattedServiceRevenue"));
+        totalRevColumn.setCellValueFactory(new PropertyValueFactory<>("formattedTotalRevenue"));
+        growthColumn.setCellValueFactory(new PropertyValueFactory<>("growth"));
+
+        summaryTable.setItems(reportList);
+        revenueChart.getData().clear();
         revenueChart.getData().addAll(roomSeries, serviceSeries);
-
-        // Style the bars after they've been rendered
-        javafx.application.Platform.runLater(() -> {
-            // Style each data point in the series
-            for (XYChart.Data<String, Number> data : roomSeries.getData()) {
-                if (data.getNode() != null) {
-                    data.getNode().setStyle("-fx-bar-fill: #3498db;"); // Blue for rooms
-                }
-            }
-
-            for (XYChart.Data<String, Number> data : serviceSeries.getData()) {
-                if (data.getNode() != null) {
-                    data.getNode().setStyle("-fx-bar-fill: #2ecc71;"); // Green for services
-                }
-            }
-        });
-
-        // Populate table with matching data
-        DecimalFormat formatter = new DecimalFormat("#,###");
-        ObservableList<MonthlyRevenue> data = FXCollections.observableArrayList(
-                new MonthlyRevenue(
-                        "Tháng 1",
-                        formatter.format(245000000) + " ₫",
-                        formatter.format(87000000) + " ₫",
-                        formatter.format(332000000) + " ₫",
-                        "-"
-                ),
-                new MonthlyRevenue(
-                        "Tháng 2",
-                        formatter.format(278000000) + " ₫",
-                        formatter.format(102000000) + " ₫",
-                        formatter.format(380000000) + " ₫",
-                        "+14.5%"
-                ),
-                new MonthlyRevenue(
-                        "Tháng 3",
-                        formatter.format(310000000) + " ₫",
-                        formatter.format(132000000) + " ₫",
-                        formatter.format(442000000) + " ₫",
-                        "+16.3%"
-                )
-        );
-
-        summaryTable.setItems(data);
     }
 
     @FXML
-    private void generateReport() {
-        // In a real application, this would query the database based on date range
-        // For now, just show a confirmation
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Báo cáo đã được tạo");
-        alert.setHeaderText(null);
-        alert.setContentText("Báo cáo từ " +
-                startDatePicker.getValue().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) +
-                " đến " +
-                endDatePicker.getValue().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) +
-                " đã được tạo thành công!");
-        alert.showAndWait();
-    }
+    void exportToExcel(ActionEvent event) {
+        ObservableList<MonthlyReport> data = summaryTable.getItems();
+        if (data.isEmpty()) return;
 
-    @FXML
-    private void exportToPDF() {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Lưu báo cáo PDF");
-        fileChooser.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("PDF Files", "*.pdf"));
-        fileChooser.setInitialFileName("BaoCaoDoanhThu.pdf");
-        File file = fileChooser.showSaveDialog(new Stage());
-
-        if (file != null) {
-            // Implementation for PDF export would go here
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Xuất PDF");
-            alert.setHeaderText(null);
-            alert.setContentText("Đã xuất báo cáo thành công đến: " + file.getPath());
-            alert.showAndWait();
-        }
-    }
-
-    @FXML
-    private void exportToExcel() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Lưu báo cáo Excel");
-        fileChooser.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("Excel Files", "*.xlsx"));
+        fileChooser.setTitle("Lưu báo cáo doanh thu");
         fileChooser.setInitialFileName("BaoCaoDoanhThu.xlsx");
-        File file = fileChooser.showSaveDialog(new Stage());
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Excel Files", "*.xlsx"));
+        File file = fileChooser.showSaveDialog(exportExcelBtn.getScene().getWindow());
 
         if (file != null) {
-            // Implementation for Excel export would go here
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Xuất Excel");
-            alert.setHeaderText(null);
-            alert.setContentText("Đã xuất báo cáo thành công đến: " + file.getPath());
-            alert.showAndWait();
+            try (Workbook workbook = new XSSFWorkbook()) {
+                Sheet sheet = workbook.createSheet("Báo cáo");
+
+                Row header = sheet.createRow(0);
+                String[] titles = {"Tháng", "Doanh thu phòng (VND)", "Doanh thu dịch vụ (VND)", "Tổng doanh thu (VND)", "Tăng trưởng (%)"};
+                for (int i = 0; i < titles.length; i++) {
+                    header.createCell(i).setCellValue(titles[i]);
+                }
+
+                int rowIdx = 1;
+                for (MonthlyReport item : data) {
+                    Row row = sheet.createRow(rowIdx++);
+                    row.createCell(0).setCellValue(item.getMonth());
+                    row.createCell(1).setCellValue(item.getRoomRevenue());
+                    row.createCell(2).setCellValue(item.getServiceRevenue());
+                    row.createCell(3).setCellValue(item.getTotalRevenue());
+                    row.createCell(4).setCellValue(item.getGrowth());
+                }
+
+                for (int i = 0; i < titles.length; i++) {
+                    sheet.autoSizeColumn(i);
+                }
+
+                FileOutputStream fileOut = new FileOutputStream(file);
+                workbook.write(fileOut);
+                fileOut.close();
+                alert.showInfoAlert("Xuất báo cáo thành công");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
-    @FXML
-    private void printReport() {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("In báo cáo");
-        alert.setHeaderText(null);
-        alert.setContentText("Đang gửi báo cáo đến máy in...");
-        alert.showAndWait();
-    }
+    public ArrayList<Invoice> getListInvoice() {
+        ArrayList<Invoice> filtered = new ArrayList<>();
+        ArrayList<Invoice> all = invoiceDao.findAll();
 
-    // Model class for table data
-    public static class MonthlyRevenue {
-        private final String month;
-        private final String roomRevenue;
-        private final String serviceRevenue;
-        private final String totalRevenue;
-        private final String growth;
+        if (startDatePicker.getValue() == null || endDatePicker.getValue() == null) return filtered;
 
-        public MonthlyRevenue(String month, String roomRevenue, String serviceRevenue,
-                              String totalRevenue, String growth) {
-            this.month = month;
-            this.roomRevenue = roomRevenue;
-            this.serviceRevenue = serviceRevenue;
-            this.totalRevenue = totalRevenue;
-            this.growth = growth;
+        Date start = Date.valueOf(startDatePicker.getValue());
+        Date end = Date.valueOf(endDatePicker.getValue());
+
+        for (Invoice invoice : all) {
+            Date issue = invoice.getIssueDate();
+            if (!issue.before(start) && !issue.after(end)) {
+                filtered.add(invoice);
+            }
         }
-
-        public String getMonth() { return month; }
-        public String getRoomRevenue() { return roomRevenue; }
-        public String getServiceRevenue() { return serviceRevenue; }
-        public String getTotalRevenue() { return totalRevenue; }
-        public String getGrowth() { return growth; }
+        return filtered;
     }
+
+    public double calculateBookingTotal(String bookingID) {
+        Booking book = bookDao.getBookingById(bookingID);
+        if (book == null) return 0.0;
+        double price = roomDao.getPriceById(book.getRoomId());
+        return book.calculateTotalRoomCost(price);
+    }
+
+    public double calculateServiceTotal(String serviceBookingID) {
+        if (serviceBookingID == null) return 0.0;
+        ServiceBooking sb = serviceBookingDao.getById(serviceBookingID);
+        return sb == null ? 0.0 : sb.getTotalAmount();
+    }
+
+    public Map<String, Double> getRoomRevenueByMonth() {
+        Map<String, Double> result = new LinkedHashMap<>();
+        for (Invoice invoice : getListInvoice()) {
+            String monthKey = getMonthKey(invoice.getIssueDate());
+            double amount = calculateBookingTotal(invoice.getBookingID());
+            result.put(monthKey, result.getOrDefault(monthKey, 0.0) + amount);
+        }
+        return result;
+    }
+
+    public Map<String, Double> getServiceRevenueByMonth() {
+        Map<String, Double> result = new LinkedHashMap<>();
+        for (Invoice invoice : getListInvoice()) {
+            String monthKey = getMonthKey(invoice.getIssueDate());
+            double amount = calculateServiceTotal(invoice.getServiceBookingID());
+            result.put(monthKey, result.getOrDefault(monthKey, 0.0) + amount);
+        }
+        return result;
+    }
+
+    private String getMonthKey(Date date) {
+        LocalDate localDate = date.toLocalDate();
+        return String.format("%02d-%d", localDate.getMonthValue(), localDate.getYear());
+    }
+
 }
