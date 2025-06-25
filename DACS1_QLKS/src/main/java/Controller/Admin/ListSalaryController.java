@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 public class ListSalaryController implements Initializable {
     EmployeeDao empDao=new EmployeeDao();
@@ -121,7 +122,6 @@ public class ListSalaryController implements Initializable {
             al.showErrorAlert("Thêm  thất bại");
         }
     }
-
     @FXML
     void remove(ActionEvent event) {
         Salary selectedSalary = salaryTable.getSelectionModel().getSelectedItem();
@@ -180,10 +180,10 @@ public class ListSalaryController implements Initializable {
                 row.createCell(1).setCellValue(s.getEmployeeID());
                 row.createCell(2).setCellValue(s.getName());
                 row.createCell(3).setCellValue(s.getPosition());
-                row.createCell(4).setCellValue(s.getAmount());
-                row.createCell(5).setCellValue(s.getTransportAllowance());
-                row.createCell(6).setCellValue(bonus);
-                row.createCell(7).setCellValue(total);
+                row.createCell(4).setCellValue(String.format("%,.0f VND", (double)s.getAmount()));
+                row.createCell(5).setCellValue(String.format("%,.0f VND",(double)s.getTransportAllowance()));
+                row.createCell(6).setCellValue(String.format("%,.0f VND", (double)bonus));
+                row.createCell(7).setCellValue(String.format("%,.0f VND", (double)total));
             }
 
             for (int i = 0; i < headers.length; i++) {
@@ -261,8 +261,8 @@ public class ListSalaryController implements Initializable {
         if (salary != null) {
             salaryIDText.setText(salary.getSalaryID()+"");
             employeeIDText.setValue(salary.getEmployeeID());
-            amountText.setText(String.valueOf(salary.getAmount()));
-            phuCapText.setText(String.valueOf(salary.getTransportAllowance()));
+            amountText.setText(salary.getAmount()+"");
+            phuCapText.setText(salary.getTransportAllowance()+"");
             nameText.setText(salary.getName());
             chucVuText.setValue(salary.getPosition());
         } else {
@@ -325,42 +325,34 @@ public class ListSalaryController implements Initializable {
             keyword = "";
         }
 
-        // Convert to lowercase for case-insensitive search
         String searchTerm = keyword.trim().toLowerCase();
 
-        // If search term is empty, show all employees
         if (searchTerm.isEmpty()) {
             salaryTable.setItems(salaryList);
             return;
         }
 
-        // Filter the employee list
-        ObservableList<Salary> filteredList = FXCollections.observableArrayList();
-        for (Salary x : salaryList) {
-            String lowerSearchTerm = searchTerm.toLowerCase();  // Chuẩn hóa
-            String salaryID = String.valueOf(x.getSalaryID());
-            String employeeID = x.getEmployeeID().toLowerCase();
-            String name = x.getName().toLowerCase();
-            String position = x.getPosition().toLowerCase();
+        List<Salary> filtered = salaryList.stream()
+                .filter(x -> {
+                    String salaryID = String.valueOf(x.getSalaryID());
+                    String employeeID = x.getEmployeeID() != null ? x.getEmployeeID().toLowerCase() : "";
+                    String name = x.getName() != null ? x.getName().toLowerCase() : "";
+                    String position = x.getPosition() != null ? x.getPosition().toLowerCase() : "";
+                    String amountStr = String.valueOf(x.getAmount());
+                    String allowanceStr = String.valueOf(x.getTransportAllowance());
 
-            // Chuyển lương/phụ cấp thành chuỗi để so sánh
-            String amountStr = String.valueOf(x.getAmount());
-            String allowanceStr = String.valueOf(x.getTransportAllowance());
+                    return salaryID.contains(searchTerm)
+                            || employeeID.contains(searchTerm)
+                            || name.contains(searchTerm)
+                            || position.contains(searchTerm)
+                            || amountStr.contains(searchTerm)
+                            || allowanceStr.contains(searchTerm);
+                })
+                .collect(Collectors.toList());
 
-            if (salaryID.contains(lowerSearchTerm)
-                    || employeeID.contains(lowerSearchTerm)
-                    || name.contains(lowerSearchTerm)
-                    || position.contains(lowerSearchTerm)
-                    || amountStr.contains(lowerSearchTerm)
-                    || allowanceStr.contains(lowerSearchTerm)
-            ) {
-                filteredList.add(x);
-            }
-        }
-
-        // Update table view with filtered results
-        salaryTable.setItems(filteredList);
+        salaryTable.setItems(FXCollections.observableArrayList(filtered));
     }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         setUpTable();

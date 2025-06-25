@@ -24,6 +24,7 @@ import java.io.FileOutputStream;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 public class ListAccountController implements Initializable {
 
@@ -144,16 +145,18 @@ public class ListAccountController implements Initializable {
             return;
         }
 
-        ObservableList<Account> filteredList = FXCollections.observableArrayList();
-        for (Account account : accountList) {
-            if (account.getUserName().toLowerCase().contains(keyword.toLowerCase()) ||
-                    account.getName().toLowerCase().contains(keyword.toLowerCase()) ||
-                    account.getEmail().toLowerCase().contains(keyword.toLowerCase())) {
-                filteredList.add(account);
-            }
-        }
-        accountTable.setItems(filteredList);
+        String lowerKeyword = keyword.toLowerCase();
+        List<Account> filtered = accountList.stream()
+                .filter(account ->
+                        account.getUserName().toLowerCase().contains(lowerKeyword) ||
+                                account.getName().toLowerCase().contains(lowerKeyword) ||
+                                account.getEmail().toLowerCase().contains(lowerKeyword)
+                )
+                .collect(Collectors.toList());
+
+        accountTable.setItems(FXCollections.observableArrayList(filtered));
     }
+
 
     private void showAccountDetails(Account account) {
         employIDCombobox.setValue(account.getEmployeeId());

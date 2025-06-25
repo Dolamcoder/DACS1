@@ -266,7 +266,6 @@ public class ListCustomerController implements Initializable {
             exportToExcel(file);
         }
     }
-
     private void exportToExcel(File file) {
         startRealTimeProgress();
 
@@ -339,7 +338,7 @@ public class ListCustomerController implements Initializable {
         // Handle task completion
         task.setOnSucceeded(event -> {
             al.showInfoAlert("Xuất danh sách khách hàng thành công");
-            AuditLogController.getAuditLog("Customer", "Toàn bộ bản ghi", "Xuất danh sách khách hàng", LoginController.account.getName());
+            AuditLogController.getAuditLog("Customer", "ALl Cstomer", "Xuất danh sách khách hàng", LoginController.account.getName());
             finishRealTimeProgress();
         });
 

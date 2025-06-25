@@ -18,6 +18,7 @@
     import java.time.LocalDateTime;
     import java.time.format.DateTimeFormatter;
     import java.util.ArrayList;
+    import java.util.List;
     import java.util.Set;
     import java.util.stream.Collectors;
     public class CheckinController {
@@ -119,31 +120,44 @@
 
         private void setupSearchListener() {
             timKiemText.textProperty().addListener((observable, oldValue, newValue) -> {
-                String keyword = newValue.toLowerCase().trim();
+                String keyword = (newValue == null) ? "" : newValue.trim().toLowerCase();
+
                 if (keyword.isEmpty()) {
                     bookingList.setAll(allConfirmedBookings);
                 } else {
-                    ObservableList<Booking> filtered = FXCollections.observableArrayList(
-                            allConfirmedBookings.stream()
-                                    .filter(b -> {
-                                        Customer customer = cDao.searchById(b.getCustomerId());
+                    List<Booking> filtered = allConfirmedBookings.stream()
+                            .filter(b -> {
+                                String bookingId = String.valueOf(b.getBookingId()).toLowerCase();
+                                String roomId = String.valueOf(b.getRoomId()).toLowerCase();
+                                String customerId = String.valueOf(b.getCustomerId()).toLowerCase();
+                                String checkIn = b.getCheckInDate() != null ? b.getCheckInDate().toString().toLowerCase() : "";
+                                String checkOut = b.getCheckOutDate() != null ? b.getCheckOutDate().toString().toLowerCase() : "";
+                                String createdAt = b.getCreatedAt() != null ? b.getCreatedAt().toString().toLowerCase() : "";
+                                String status = b.getStatus() != null ? b.getStatus().toLowerCase() : "";
 
-                                        return (customer != null && customer.getName().toLowerCase().contains(keyword))
-                                                || String.valueOf(b.getBookingId()).toLowerCase().contains(keyword)         // BookingID
-                                                || String.valueOf(b.getRoomId()).toLowerCase().contains(keyword)     // RoomID
-                                                || String.valueOf(b.getCustomerId()).toLowerCase().contains(keyword) // CustomerID
-                                                || b.getCheckInDate().toString().toLowerCase().contains(keyword)     // CheckInDate
-                                                || b.getCheckOutDate().toString().toLowerCase().contains(keyword)    // CheckOutDate
-                                                || b.getCreatedAt().toString().toLowerCase().contains(keyword)       // CreatedAt
-                                                || b.getStatus().toLowerCase().contains(keyword);                    // Status
-                                    })
-                                    .collect(Collectors.toList())
-                    );
+                                Customer customer = cDao.searchById(b.getCustomerId());
+                                String customerName = customer != null && customer.getName() != null
+                                        ? customer.getName().toLowerCase()
+                                        : "";
+
+                                return bookingId.contains(keyword)
+                                        || roomId.contains(keyword)
+                                        || customerId.contains(keyword)
+                                        || checkIn.contains(keyword)
+                                        || checkOut.contains(keyword)
+                                        || createdAt.contains(keyword)
+                                        || status.contains(keyword)
+                                        || customerName.contains(keyword);
+                            })
+                            .collect(Collectors.toList());
+
                     bookingList.setAll(filtered);
                 }
+
                 table.refresh();
             });
         }
+
         private boolean isEmpty(TextField tf) {
             return tf.getText() == null || tf.getText().trim().isEmpty();
         }

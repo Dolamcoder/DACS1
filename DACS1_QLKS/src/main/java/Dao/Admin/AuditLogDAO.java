@@ -16,6 +16,7 @@ public class AuditLogDAO implements DaoInterface<AuditLog> {
 
     @Override
     public ArrayList<AuditLog> selectAll() {
+        conn=JDBC.getConnection();
         ArrayList<AuditLog> list = new ArrayList<>();
         String sql = "SELECT * FROM audit_log";
         try (PreparedStatement stmt = conn.prepareStatement(sql);
@@ -31,6 +32,7 @@ public class AuditLogDAO implements DaoInterface<AuditLog> {
                 log.setActionAt(rs.getTimestamp("actionAt"));
                 list.add(log);
             }
+            conn.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -39,6 +41,7 @@ public class AuditLogDAO implements DaoInterface<AuditLog> {
 
 
     public AuditLog getByID(int id) {
+        conn=JDBC.getConnection();
         String sql = "SELECT * FROM audit_log WHERE logID = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
@@ -53,6 +56,7 @@ public class AuditLogDAO implements DaoInterface<AuditLog> {
                         rs.getTimestamp("actionAt")
                 );
             }
+            conn.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -76,6 +80,7 @@ public class AuditLogDAO implements DaoInterface<AuditLog> {
 
     @Override
     public boolean update(AuditLog log) {
+        conn=JDBC.getConnection();
         String sql = "UPDATE audit_log SET tableName=?, recordID=?, action=?, actionBy=? WHERE logID=?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, log.getTableName());
@@ -83,7 +88,9 @@ public class AuditLogDAO implements DaoInterface<AuditLog> {
             stmt.setString(3, log.getAction());
             stmt.setString(4, log.getActionBy());
             stmt.setInt(5, log.getLogID());
-            return stmt.executeUpdate() > 0;
+            int answers = stmt.executeUpdate();
+            conn.close();
+            return answers > 0;
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -92,10 +99,13 @@ public class AuditLogDAO implements DaoInterface<AuditLog> {
 
     @Override
     public boolean delete(String recordID ) {
+        conn=JDBC.getConnection();
         String sql = "DELETE FROM audit_log WHERE recordID  = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, recordID);
-            return stmt.executeUpdate() > 0;
+            int rowsAffected = stmt.executeUpdate();
+            conn.close();
+            return rowsAffected > 0;
         } catch (SQLException e) {
             e.printStackTrace();
         }

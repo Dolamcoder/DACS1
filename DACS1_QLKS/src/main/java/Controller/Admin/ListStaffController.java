@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 public class ListStaffController implements Initializable {
 
@@ -138,33 +139,25 @@ public class ListStaffController implements Initializable {
     }
 
     private void filterEmployees(String keyword) {
-        if (keyword == null) {
-            keyword = "";
-        }
+        String searchTerm = (keyword == null) ? "" : keyword.trim().toLowerCase();
 
-        // Convert to lowercase for case-insensitive search
-        String searchTerm = keyword.trim().toLowerCase();
-
-        // If search term is empty, show all employees
         if (searchTerm.isEmpty()) {
             accountTable.setItems(employeeList);
             return;
         }
 
-        // Filter the employee list
-        ObservableList<Employee> filteredList = FXCollections.observableArrayList();
-        for (Employee employee : employeeList) {
-            if (employee.getId().toLowerCase().contains(searchTerm) ||
-                    employee.getName().toLowerCase().contains(searchTerm) ||
-                    employee.getEmail().toLowerCase().contains(searchTerm) ||
-                    employee.getPhone().toLowerCase().contains(searchTerm)) {
-                filteredList.add(employee);
-            }
-        }
+        ObservableList<Employee> filteredList = employeeList.stream()
+                .filter(employee ->
+                        employee.getId().toLowerCase().contains(searchTerm) ||
+                                employee.getName().toLowerCase().contains(searchTerm) ||
+                                employee.getEmail().toLowerCase().contains(searchTerm) ||
+                                employee.getPhone().toLowerCase().contains(searchTerm)
+                )
+                .collect(Collectors.toCollection(FXCollections::observableArrayList));
 
-        // Update table view with filtered results
         accountTable.setItems(filteredList);
     }
+
 
     @FXML
     void add(ActionEvent event) {
@@ -261,40 +254,64 @@ public class ListStaffController implements Initializable {
         if (file != null) {
             progressBar.setProgress(0);
 
-            Task<Void> exportTask = new Task<Void>() {
+            Task<Void> exportTask = new Task<>() {
                 @Override
                 protected Void call() throws Exception {
                     Workbook workbook = new XSSFWorkbook();
                     Sheet sheet = workbook.createSheet("Danh sách nhân viên");
 
-                    Row headerRow = sheet.createRow(0);
+                    // Tạo style cho header
+                    CellStyle headerStyle = workbook.createCellStyle();
+                    Font headerFont = workbook.createFont();
+                    headerFont.setBold(true);
+                    headerStyle.setFont(headerFont);
+                    headerStyle.setAlignment(HorizontalAlignment.CENTER);
+                    headerStyle.setBorderTop(BorderStyle.THIN);
+                    headerStyle.setBorderBottom(BorderStyle.THIN);
+                    headerStyle.setBorderLeft(BorderStyle.THIN);
+                    headerStyle.setBorderRight(BorderStyle.THIN);
+
+                    // Tạo style cho dữ liệu
+                    CellStyle cellStyle = workbook.createCellStyle();
+                    cellStyle.setAlignment(HorizontalAlignment.CENTER);
+                    cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+                    cellStyle.setBorderTop(BorderStyle.THIN);
+                    cellStyle.setBorderBottom(BorderStyle.THIN);
+                    cellStyle.setBorderLeft(BorderStyle.THIN);
+                    cellStyle.setBorderRight(BorderStyle.THIN);
+
+                    // Header
                     String[] headers = {"ID", "Họ Tên", "Email", "Số điện thoại", "Giới tính",
                             "Ngày sinh", "Ngày vào làm", "Chức vụ"};
-                    CellStyle headerStyle = workbook.createCellStyle();
-                    Font font = workbook.createFont();
-                    font.setBold(true);
-                    headerStyle.setFont(font);
-                    //set header style
+                    Row headerRow = sheet.createRow(0);
                     for (int i = 0; i < headers.length; i++) {
-                        sheet.autoSizeColumn(i);
                         Cell cell = headerRow.createCell(i);
                         cell.setCellValue(headers[i]);
+                        cell.setCellStyle(headerStyle);
                     }
 
+                    // Dữ liệu nhân viên
                     for (int i = 0; i < employeeList.size(); i++) {
                         updateProgress(i, employeeList.size());
-                        Employee employee = employeeList.get(i);
+                        Employee emp = employeeList.get(i);
                         Row row = sheet.createRow(i + 1);
-                        row.createCell(0).setCellValue(employee.getId());
-                        row.createCell(1).setCellValue(employee.getName());
-                        row.createCell(2).setCellValue(employee.getEmail());
-                        row.createCell(3).setCellValue(employee.getPhone());
-                        row.createCell(4).setCellValue(employee.getGender());
-                        row.createCell(5).setCellValue(employee.getBirth().toString());
-                        row.createCell(6).setCellValue(employee.getHireDate());
-                        row.createCell(7).setCellValue(employee.getPosition()); // Position would go here
+
+                        Cell c0 = row.createCell(0); c0.setCellValue(emp.getId()); c0.setCellStyle(cellStyle);
+                        Cell c1 = row.createCell(1); c1.setCellValue(emp.getName()); c1.setCellStyle(cellStyle);
+                        Cell c2 = row.createCell(2); c2.setCellValue(emp.getEmail()); c2.setCellStyle(cellStyle);
+                        Cell c3 = row.createCell(3); c3.setCellValue(emp.getPhone()); c3.setCellStyle(cellStyle);
+                        Cell c4 = row.createCell(4); c4.setCellValue(emp.getGender()); c4.setCellStyle(cellStyle);
+                        Cell c5 = row.createCell(5); c5.setCellValue(emp.getBirth().toString()); c5.setCellStyle(cellStyle);
+                        Cell c6 = row.createCell(6); c6.setCellValue(emp.getHireDate().toString()); c6.setCellStyle(cellStyle);
+                        Cell c7 = row.createCell(7); c7.setCellValue(emp.getPosition()); c7.setCellStyle(cellStyle);
                     }
 
+                    // Auto resize cột sau khi ghi dữ liệu xong
+                    for (int i = 0; i < headers.length; i++) {
+                        sheet.autoSizeColumn(i);
+                    }
+
+                    // Ghi file
                     try (FileOutputStream fileOut = new FileOutputStream(file)) {
                         workbook.write(fileOut);
                     }
@@ -303,6 +320,7 @@ public class ListStaffController implements Initializable {
                 }
             };
 
+            // Ràng buộc ProgressBar
             progressBar.progressProperty().bind(exportTask.progressProperty());
 
             exportTask.setOnSucceeded(e -> {
@@ -321,6 +339,7 @@ public class ListStaffController implements Initializable {
             new Thread(exportTask).start();
         }
     }
+
     @FXML
     void handleDiemDanh(ActionEvent event) {
         Employee selectedEmployee = accountTable.getSelectionModel().getSelectedItem();

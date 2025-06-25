@@ -52,7 +52,7 @@
          <graphic>
             <FontAwesomeIcon glyphName="CHECK" size="1.5EM" />
          </graphic></Button>
-      <ComboBox fx:id="slectRoom" layoutX="474.0" layoutY="99.0" onAction="#handleRoomSelection" prefWidth="150.0" promptText="Chọn khách hàng" stylesheets="@../../Css/RoomBooking.css" />
+      <ComboBox fx:id="slectRoom" layoutX="474.0" layoutY="99.0" onAction="#handleRoomSelection" prefWidth="150.0" promptText="Chọn phòng " stylesheets="@../../Css/RoomBooking.css" />
       <Button fx:id="remove" layoutX="337.0" layoutY="505.0" mnemonicParsing="false" onAction="#handleRemoveService" prefHeight="31.0" prefWidth="82.0" text="Xoá">
          <graphic>
             <FontAwesomeIcon glyphName="TRASH" size="1.5EM" />

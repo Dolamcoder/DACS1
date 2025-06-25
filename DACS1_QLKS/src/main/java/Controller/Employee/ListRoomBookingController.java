@@ -32,6 +32,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import Alert.Alert;
 public class ListRoomBookingController implements Initializable {
@@ -66,25 +68,8 @@ public class ListRoomBookingController implements Initializable {
         loadBookings();
         setupEditableColumns();
         setupSearchField();
-
-        // Thiết lập cơ chế cập nhật tự động dữ liệu mỗi 5 phút
-        setupAutoRefresh();
     }
 
-    // Phương thức để thiết lập cập nhật tự động
-    private void setupAutoRefresh() {
-        Timer refreshTimer = new Timer(true);
-        refreshTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                Platform.runLater(() -> {
-                    if (!operationInProgress) {
-                        loadBookings();
-                    }
-                });
-            }
-        }, 5 * 60 * 1000, 5 * 60 * 1000); // 5 phút một lần
-    }
 
     private void setupTableColumns() {
         bookingIdColumn.setCellValueFactory(new PropertyValueFactory<>("bookingId"));
@@ -161,7 +146,6 @@ public class ListRoomBookingController implements Initializable {
             booking.setCheckOutDate(event.getNewValue());
         });
     }
-
     private void setupSearchField() {
         searchField.textProperty().addListener((observable, oldValue, newValue) -> searchBookings());
     }
@@ -213,97 +197,42 @@ public class ListRoomBookingController implements Initializable {
             return;
         }
 
-        Task<ObservableList<Booking>> task = new Task<>() {
-            @Override
-            protected ObservableList<Booking> call() throws Exception {
-                ObservableList<Booking> filteredList = FXCollections.observableArrayList();
-                int total = bookingsList.size();
-                int count = 0;
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        DateTimeFormatter dtFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
-                for (Booking booking : bookingsList) {
-                    // Cập nhật tiến trình cho mỗi phần tử
-                    updateProgress(++count, total);
-
-                    // Tìm kiếm theo ID đặt phòng, ID khách hàng, ID phòng
-                    if (booking.getBookingId().toLowerCase().contains(searchText) ||
-                            booking.getCustomerId().toLowerCase().contains(searchText) ||
-                            booking.getRoomId().toLowerCase().contains(searchText) ||
-                            (booking.getStatus() != null && booking.getStatus().toLowerCase().contains(searchText))) {
-                        filteredList.add(booking);
-                        continue;
-                    }
-
-                    // Tìm kiếm theo ngày check-in, check-out
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-                    if (booking.getCheckInDate() != null &&
-                            formatter.format(booking.getCheckInDate()).toLowerCase().contains(searchText)) {
-                        filteredList.add(booking);
-                        continue;
-                    }
-
-                    if (booking.getCheckOutDate() != null &&
-                            formatter.format(booking.getCheckOutDate()).toLowerCase().contains(searchText)) {
-                        filteredList.add(booking);
-                        continue;
-                    }
-
-                    // Tìm kiếm theo ngày tạo
-                    if (booking.getCreatedAt() != null) {
-                        DateTimeFormatter dtFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-                        if (dtFormatter.format(booking.getCreatedAt()).toLowerCase().contains(searchText)) {
-                            filteredList.add(booking);
-                            continue;
-                        }
-                    }
-
-                    // Tìm kiếm theo tên khách hàng
+        ObservableList<Booking> filteredList = bookingsList.stream()
+                .filter(booking -> {
                     try {
-                        String customerName = customerDao.getNameById(booking.getCustomerId());
-                        if (customerName != null && customerName.toLowerCase().contains(searchText)) {
-                            filteredList.add(booking);
-                            continue;
-                        }
+                        List<String> valuesToSearch = List.of(
+                                booking.getBookingId(),
+                                booking.getCustomerId(),
+                                booking.getRoomId(),
+                                booking.getStatus(),
+                                booking.getCheckInDate() != null ? dateFormatter.format(booking.getCheckInDate()) : "",
+                                booking.getCheckOutDate() != null ? dateFormatter.format(booking.getCheckOutDate()) : "",
+                                booking.getCreatedAt() != null ? dtFormatter.format(booking.getCreatedAt()) : "",
+                                customerDao.getNameById(booking.getCustomerId()),
+                                formatPrice(roomDao.getPriceById(booking.getRoomId()))
+                        );
+
+                        return valuesToSearch.stream()
+                                .filter(Objects::nonNull)
+                                .map(String::toLowerCase)
+                                .anyMatch(value -> value.contains(searchText));
+
                     } catch (Exception e) {
-                        System.err.println("Lỗi khi tìm kiếm theo tên khách hàng: " + e.getMessage());
+                        System.err.println("Lỗi khi lọc booking: " + e.getMessage());
+                        return false;
                     }
+                })
+                .collect(Collectors.toCollection(FXCollections::observableArrayList));
 
-                    // Tìm kiếm theo giá phòng
-                    try {
-                        double price = roomDao.getPriceById(booking.getRoomId());
-                        String roomPrice = String.format("%,.0f", price);
-                        if (roomPrice.contains(searchText) || String.valueOf((int)price).contains(searchText)) {
-                            filteredList.add(booking);
-                        }
-                    } catch (Exception e) {
-                        System.err.println("Lỗi khi tìm kiếm theo giá phòng: " + e.getMessage());
-                    }
+        table.setItems(filteredList);
+    }
 
-                    // Thêm một chút độ trễ giữa mỗi lần kiểm tra để thấy thanh tiến trình
-                    Thread.sleep(5); // Điều chỉnh nếu cần
-                }
-
-                return filteredList;
-            }
-        };
-
-        // Ràng buộc tiến trình với progressBar
-        progressBar.progressProperty().bind(task.progressProperty());
-
-        // Xử lý khi tác vụ hoàn thành
-        task.setOnSucceeded(event -> {
-            ObservableList<Booking> filteredList = task.getValue();
-            table.setItems(filteredList);
-            finishRealTimeProgress();
-        });
-
-        // Xử lý khi có lỗi
-        task.setOnFailed(event -> {
-            stopRealTimeProgress();
-            al.showErrorAlert("Lỗi khi tìm kiếm: " + task.getException().getMessage());
-        });
-
-        // Chạy tác vụ trong luồng nền
-        new Thread(task).start();
+    // Hàm hỗ trợ định dạng giá
+    private String formatPrice(double price) {
+        return String.format("%,.0f", price);
     }
     @FXML
     public void updateBooking() {
@@ -403,21 +332,18 @@ public class ListRoomBookingController implements Initializable {
 
         new Thread(task).start();
     }
-
-
     @FXML
     public void saveBookingList() {
         // Giữ nguyên logic fileChooser
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Lưu danh sách đặt phòng");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Excel Files", "*.xlsx"));
-        File file = fileChooser.showSaveDialog(table.getScene().getWindow());
+        File file = fileChooser.showSaveDialog(table.getScene().getWindow()); //hiển thị hộp thoại lưu tệp
 
         if (file != null) {
             exportToExcel(file);
         }
     }
-
     private void exportToExcel(File file) {
         Task<Void> task = new Task<>() {
             @Override
@@ -425,7 +351,6 @@ public class ListRoomBookingController implements Initializable {
                 try (Workbook workbook = new XSSFWorkbook()) {
                     Sheet sheet = workbook.createSheet("Danh sách đặt phòng");
                     Row headerRow = sheet.createRow(0);
-
                     String[] headers = {
                             "STT",
                             "Mã Đặt Phòng",
@@ -513,7 +438,6 @@ public class ListRoomBookingController implements Initializable {
         // Chạy tác vụ trong luồng nền
         new Thread(task).start();
     }
-
     @FXML
     public void checkInvoice() {
         Booking selectedBooking = table.getSelectionModel().getSelectedItem();

@@ -25,6 +25,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.stream.Collectors;
 
 import Dao.Admin.AuditLogDAO;
 import Model.AuditLog;
@@ -134,21 +135,20 @@ public class homeAdminController {
         }
 
         String lowercaseKeyword = keyword.toLowerCase();
-        ObservableList<AuditLog> filteredList = FXCollections.observableArrayList();
 
-        for (AuditLog log : auditLogList) {
-            if (String.valueOf(log.getLogID()).contains(lowercaseKeyword) ||
-                    (log.getTableName() != null && log.getTableName().toLowerCase().contains(lowercaseKeyword)) ||
-                    (log.getRecordID() != null && log.getRecordID().toLowerCase().contains(lowercaseKeyword)) ||
-                    (log.getAction() != null && log.getAction().toLowerCase().contains(lowercaseKeyword)) ||
-                    (log.getActionBy() != null && log.getActionBy().toLowerCase().contains(lowercaseKeyword))) {
-                filteredList.add(log);
-            }
-        }
+        ObservableList<AuditLog> filteredList = auditLogList.stream()
+                .filter(log ->
+                        String.valueOf(log.getLogID()).contains(lowercaseKeyword) ||
+                                (log.getTableName() != null && log.getTableName().toLowerCase().contains(lowercaseKeyword)) ||
+                                (log.getRecordID() != null && log.getRecordID().toLowerCase().contains(lowercaseKeyword)) ||
+                                (log.getAction() != null && log.getAction().toLowerCase().contains(lowercaseKeyword)) ||
+                                (log.getActionBy() != null && log.getActionBy().toLowerCase().contains(lowercaseKeyword))
+                )
+                .collect(Collectors.toCollection(FXCollections::observableArrayList));
 
-        TableView<AuditLog> auditTable = (TableView<AuditLog>) table;
-        auditTable.setItems(filteredList);
+        table.setItems(filteredList);
     }
+
     @FXML
     void handleAccount(ActionEvent event) {
         try {

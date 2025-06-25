@@ -23,6 +23,7 @@ import java.io.FileOutputStream;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 public class ListServiceController implements Initializable {
 
@@ -98,18 +99,16 @@ public class ListServiceController implements Initializable {
             return;
         }
 
-        keyword = keyword.toLowerCase();
-        ObservableList<Service> filteredList = FXCollections.observableArrayList();
+        String lowerKeyword = keyword.toLowerCase();
 
-        for (Service service : serviceList) {
-            if ((service.getServiceId()+"").equals(keyword) ||
-                    service.getName().toLowerCase().contains(keyword) ||
-                    String.valueOf(service.getPrice()).contains(keyword) ||
-                    (service.getDescription() != null &&
-                            service.getDescription().toLowerCase().contains(keyword))) {
-                filteredList.add(service);
-            }
-        }
+        ObservableList<Service> filteredList = serviceList.stream()
+                .filter(service ->
+                        String.valueOf(service.getServiceId()).equals(lowerKeyword) ||
+                                service.getName().toLowerCase().contains(lowerKeyword) ||
+                                String.valueOf(service.getPrice()).contains(lowerKeyword) ||
+                                (service.getDescription() != null && service.getDescription().toLowerCase().contains(lowerKeyword))
+                )
+                .collect(Collectors.toCollection(FXCollections::observableArrayList));
 
         tableView.setItems(filteredList);
     }
@@ -117,7 +116,7 @@ public class ListServiceController implements Initializable {
     private void showServiceDetails(Service service) {
         serviceText.setText(service.getServiceId()+"");
         nameServiceText.setText(service.getName());
-        numberText.setText(String.valueOf(service.getPrice()));
+        numberText.setText(service.getPrice()+"");
         descriptionText.setText(service.getDescription());
     }
 
@@ -127,7 +126,6 @@ public class ListServiceController implements Initializable {
         numberText.clear();
         descriptionText.clear();
     }
-
     private boolean validateFields() {
         if (serviceText.getText().trim().isEmpty() ||
                 nameServiceText.getText().trim().isEmpty() ||
@@ -264,7 +262,7 @@ public class ListServiceController implements Initializable {
 
                         row.createCell(0).setCellValue(service.getServiceId());
                         row.createCell(1).setCellValue(service.getName());
-                        row.createCell(2).setCellValue(service.getPrice());
+                        row.createCell(2).setCellValue(String.format("%,.0f VND", (double)service.getPrice()));
                         row.createCell(3).setCellValue(service.getDescription());
 
                         // Update progress

@@ -127,11 +127,23 @@ public class ListInvoiceController implements Initializable {
                 javafx.application.Platform.runLater(() -> {
                     invoiceTable.setItems(invoicesList);
                     progressBar.setProgress(1.0);
+                    // Reset progressBar về trạng thái mặc định sau 1.5 giây
+                    new java.util.Timer().schedule(
+                            new java.util.TimerTask() {
+                                @Override
+                                public void run() {
+                                    javafx.application.Platform.runLater(() -> progressBar.setProgress(0.0));
+                                }
+                            },
+                            100
+                    );
                 });
             } catch (Exception e) {
                 e.printStackTrace();
-                javafx.application.Platform.runLater(() ->
-                        al.showErrorAlert("Không thể tải dữ liệu hóa đơn: " + e.getMessage()));
+                javafx.application.Platform.runLater(() -> {
+                    al.showErrorAlert("Không thể tải dữ liệu hóa đơn: " + e.getMessage());
+                    progressBar.setProgress(0.0); // Reset khi có lỗi
+                });
             }
         });
     }
@@ -220,7 +232,6 @@ public class ListInvoiceController implements Initializable {
         fileChooser.getExtensionFilters().add(
                 new FileChooser.ExtensionFilter("Excel Files", "*.xlsx")
         );
-        // Default filename suggestion with timestamp
         fileChooser.setInitialFileName("DanhSachHoaDon_" +
                 LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")) + ".xlsx");
 
@@ -229,63 +240,79 @@ public class ListInvoiceController implements Initializable {
             return;
         }
 
-        try (Workbook workbook = new XSSFWorkbook()) {
-            Sheet sheet = workbook.createSheet("Danh sách hóa đơn");
+        // Hiển thị tiến trình
+        progressBar.setProgress(ProgressBar.INDETERMINATE_PROGRESS);
 
-            // Create header style
-            Font headerFont = workbook.createFont();
-            headerFont.setBold(true);
-            CellStyle headerStyle = workbook.createCellStyle();
-            headerStyle.setFont(headerFont);
+        executor.submit(() -> {
+            try (Workbook workbook = new XSSFWorkbook()) {
+                Sheet sheet = workbook.createSheet("Danh sách hóa đơn");
 
-            // Create header row
-            Row headerRow = sheet.createRow(0);
-            String[] headers = {"Mã hóa đơn", "Mã đặt phòng", "Tên khách hàng", "Mã đặt dịch vụ",
-                    "Ngày lập", "Tổng tiền", "Thuế (%)", "Số lượng", "Trạng thái"};
-            for (int i = 0; i < headers.length; i++) {
-                Cell cell = headerRow.createCell(i);
-                cell.setCellValue(headers[i]);
-                cell.setCellStyle(headerStyle);
+                // Tạo header và các dòng dữ liệu...
+                // [Phần code tạo Excel giữ nguyên]
+                Font headerFont = workbook.createFont();
+                headerFont.setBold(true);
+                CellStyle headerStyle = workbook.createCellStyle();
+                headerStyle.setFont(headerFont);
+
+                Row headerRow = sheet.createRow(0);
+                String[] headers = {"Mã hóa đơn", "Mã đặt phòng", "Tên khách hàng", "Mã đặt dịch vụ",
+                        "Ngày lập", "Tổng tiền", "Thuế (%)", "Số lượng", "Trạng thái"};
+                for (int i = 0; i < headers.length; i++) {
+                    Cell cell = headerRow.createCell(i);
+                    cell.setCellValue(headers[i]);
+                    cell.setCellStyle(headerStyle);
+                }
+
+                int rowNum = 1;
+                NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
+                DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                for (Invoice invoice : invoicesList) {
+                    Row row = sheet.createRow(rowNum++);
+                    row.createCell(0).setCellValue(invoice.getInvoiceID());
+                    row.createCell(1).setCellValue(invoice.getBookingID());
+                    String customerName = customerNames.getOrDefault(invoice.getBookingID(), "");
+                    row.createCell(2).setCellValue(customerName);
+                    row.createCell(3).setCellValue(invoice.getServiceBookingID());
+                    LocalDate localDate = invoice.getIssueDate().toLocalDate();
+                    row.createCell(4).setCellValue(localDate.format(dateFormatter));
+                    row.createCell(5).setCellValue(String.format("%,.0f VND", invoice.getTotalAmount()));
+                    row.createCell(6).setCellValue(invoice.getTax());
+                    row.createCell(7).setCellValue(invoice.getAmount());
+                    row.createCell(8).setCellValue(invoice.getStatus());
+                }
+
+                for (int i = 0; i < headers.length; i++) {
+                    sheet.autoSizeColumn(i);
+                }
+
+                try (FileOutputStream fileOut = new FileOutputStream(file)) {
+                    workbook.write(fileOut);
+                }
+
+                javafx.application.Platform.runLater(() -> {
+                    progressBar.setProgress(1.0);
+                    al.showInfoAlert("Đã lưu danh sách hóa đơn thành công!\nĐường dẫn: " + file.getAbsolutePath());
+
+                    // Reset progressBar sau 1.5 giây
+                    new java.util.Timer().schedule(
+                            new java.util.TimerTask() {
+                                @Override
+                                public void run() {
+                                    javafx.application.Platform.runLater(() -> progressBar.setProgress(0.0));
+                                }
+                            },
+                            1500
+                    );
+                });
+            } catch (IOException e) {
+                e.printStackTrace();
+                javafx.application.Platform.runLater(() -> {
+                    progressBar.setProgress(0.0);
+                    al.showErrorAlert("Không thể lưu danh sách: " + e.getMessage());
+                });
             }
-
-            // Populate data rows
-            int rowNum = 1;
-            NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
-            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-            for (Invoice invoice : invoicesList) {
-                Row row = sheet.createRow(rowNum++);
-                row.createCell(0).setCellValue(invoice.getInvoiceID());
-                row.createCell(1).setCellValue(invoice.getBookingID());
-
-                // Add customer name to the Excel file
-                String customerName = customerNames.getOrDefault(invoice.getBookingID(), "");
-                row.createCell(2).setCellValue(customerName);
-
-                row.createCell(3).setCellValue(invoice.getServiceBookingID());
-                LocalDate localDate = invoice.getIssueDate().toLocalDate();
-                row.createCell(4).setCellValue(localDate.format(dateFormatter));
-                row.createCell(5).setCellValue(invoice.getTotalAmount());
-                row.createCell(6).setCellValue(invoice.getTax());
-                row.createCell(7).setCellValue(invoice.getAmount());
-                row.createCell(8).setCellValue(invoice.getStatus());
-            }
-
-            // Auto-size columns
-            for (int i = 0; i < headers.length; i++) {
-                sheet.autoSizeColumn(i);
-            }
-
-            // Save the file to selected location
-            try (FileOutputStream fileOut = new FileOutputStream(file)) {
-                workbook.write(fileOut);
-            }
-            al.showInfoAlert("Đã lưu danh sách hóa đơn thành công!\nĐường dẫn: " + file.getAbsolutePath());
-        } catch (IOException e) {
-            e.printStackTrace();
-            al.showErrorAlert("Không thể lưu danh sách: " + e.getMessage());
-        }
+        });
     }
-
     @FXML
     public void updateInvoice() {
         Invoice selectedInvoice = invoiceTable.getSelectionModel().getSelectedItem();

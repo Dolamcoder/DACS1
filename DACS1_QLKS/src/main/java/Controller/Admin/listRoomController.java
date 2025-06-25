@@ -23,6 +23,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.FileOutputStream;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 public class listRoomController implements Initializable {
 
@@ -127,18 +128,22 @@ public class listRoomController implements Initializable {
             roomTable.setItems(roomList);
             return;
         }
-        ObservableList<Room> filtered = FXCollections.observableArrayList();
-        for (Room room : roomList) {
-            if (room.getId().toLowerCase().contains(keyword.toLowerCase()) ||
-                room.getLoaiPhong().toLowerCase().contains(keyword.toLowerCase()) ||
-                String.valueOf(room.getPrice()).contains(keyword) ||
-                String.valueOf(room.getNumber()).contains(keyword) ||
-               (room.getStatus()).toLowerCase().contains(keyword.toLowerCase())) {
-                filtered.add(room);
-            }
-        }
+
+        String lowercaseKeyword = keyword.toLowerCase();
+
+        ObservableList<Room> filtered = roomList.stream()
+                .filter(room ->
+                        room.getId().toLowerCase().contains(lowercaseKeyword) ||
+                                room.getLoaiPhong().toLowerCase().contains(lowercaseKeyword) ||
+                                String.valueOf(room.getPrice()).contains(keyword) ||
+                                String.valueOf(room.getNumber()).contains(keyword) ||
+                                room.getStatus().toLowerCase().contains(lowercaseKeyword)
+                )
+                .collect(Collectors.toCollection(FXCollections::observableArrayList));
+
         roomTable.setItems(filtered);
     }
+
 
     private String getStatusString(int status) {
         switch (status) {
@@ -271,7 +276,7 @@ public class listRoomController implements Initializable {
                         // Room data
                         row.createCell(0).setCellValue(room.getId());
                         row.createCell(1).setCellValue(room.getNumber());
-                        row.createCell(2).setCellValue(room.getPrice());
+                        row.createCell(2).setCellValue(String.format("%,.0f VND", (double)room.getPrice()));
                         row.createCell(3).setCellValue(room.getStatus());
 
                         // Type_room data
@@ -384,7 +389,7 @@ public class listRoomController implements Initializable {
                 selectedRoom.getId(),
                 selectedRoom.getNumber(),
                 selectedRoom.getLoaiPhong(),
-                selectedRoom.getPrice(),
+                String.format("%,.0f VND", (double)selectedRoom.getPrice()),
                 selectedRoom.getStatus(),
                 typeRoomInfo);
         al.showInfoAlert(details);
@@ -399,7 +404,7 @@ public class listRoomController implements Initializable {
     private void populateFields(Room room) {
         idPhongText.setText(room.getId());
         typeRoomText.setText(room.getLoaiPhong());
-        priceText.setText(room.getPrice() + "");
+        priceText.setText(room.getPrice()+"");
         statusText.setValue(room.getStatus());
     }
 

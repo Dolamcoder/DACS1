@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class ListReviewController {
 
@@ -153,34 +154,34 @@ public class ListReviewController {
             keyword = "";
         }
 
-        // Convert to lowercase for case-insensitive search
         String searchTerm = keyword.trim().toLowerCase();
 
-        // If search term is empty, show all employees
         if (searchTerm.isEmpty()) {
             reviewTable.setItems(reviewList);
             return;
         }
 
-        // Filter the employee list
-        ObservableList<EmployeeReview> filteredList = FXCollections.observableArrayList();
-        for (EmployeeReview x : reviewList) {
-            String  reviewID = String.valueOf(x.getReviewID());
-            String employeeID = x.getEmployeeID() != null ? x.getEmployeeID() : "";
-            String date = x.getReviewDate() != null ? x.getReviewDate().toString() : "";
-            String ratingScore = String.valueOf(x.getRatingScore());
-            String comments = x.getComments() != null ? x.getComments() : "";
-            String bonusAmount = String.valueOf(x.getBonusAmount());
-            if( reviewID.toLowerCase().contains(searchTerm) || employeeID.toLowerCase().contains(searchTerm) || date.toLowerCase().contains(searchTerm) ||
-                    ratingScore.toLowerCase().contains(searchTerm) || comments.toLowerCase().contains(searchTerm) ||
-                    bonusAmount.toLowerCase().contains(searchTerm)) {
-                filteredList.add(x);
-            }
-        }
+        List<EmployeeReview> filtered = reviewList.stream()
+                .filter(x -> {
+                    String reviewID = String.valueOf(x.getReviewID());
+                    String employeeID = x.getEmployeeID() != null ? x.getEmployeeID() : "";
+                    String date = x.getReviewDate() != null ? x.getReviewDate().toString() : "";
+                    String ratingScore = String.valueOf(x.getRatingScore());
+                    String comments = x.getComments() != null ? x.getComments() : "";
+                    String bonusAmount = String.valueOf(x.getBonusAmount());
 
-        // Update table view with filtered results
-        reviewTable.setItems(filteredList);
+                    return reviewID.toLowerCase().contains(searchTerm) ||
+                            employeeID.toLowerCase().contains(searchTerm) ||
+                            date.toLowerCase().contains(searchTerm) ||
+                            ratingScore.toLowerCase().contains(searchTerm) ||
+                            comments.toLowerCase().contains(searchTerm) ||
+                            bonusAmount.toLowerCase().contains(searchTerm);
+                })
+                .collect(Collectors.toList());
+
+        reviewTable.setItems(FXCollections.observableArrayList(filtered));
     }
+
     private void showReviewDetail(EmployeeReview review) {
         reviewIDText.setText(String.valueOf(review.getReviewID()));
         employeeIDText.setValue(review.getEmployeeID());

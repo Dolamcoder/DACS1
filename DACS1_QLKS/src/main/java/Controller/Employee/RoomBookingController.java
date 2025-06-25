@@ -245,7 +245,7 @@ public class RoomBookingController {
         this.soPhong.setText(room.getNumber()+"");
         this.loaiPhongText.setText(typeRoom.getNameLoaiPhong());
         this.kichThuocText.setText(typeRoom.getKichThuoc()+" mét vuông");
-        this.giaThue.setText(room.getPrice()+" VND");
+        this.giaThue.setText(String.format("%,.0f VND", (double) room.getPrice()));
         this.moTa.setText(typeRoom.getMoTa());
     }
     public Booking layDatPhong() {
@@ -376,6 +376,7 @@ public class RoomBookingController {
         soGiuong.setOnMouseClicked(event -> {
             loaiPhong.getSelectionModel().clearSelection();
         });
+        moTa.setWrapText(true);
     }
     public String tachMaLoaiPhong(String loaiPhong) {
         switch (loaiPhong) {

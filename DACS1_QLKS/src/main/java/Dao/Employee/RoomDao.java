@@ -145,15 +145,14 @@ public class RoomDao implements DaoInterface<Room> {
     }
     public double getPriceById(String roomId) {
         con = JDBC.getConnection();
+        double price = 0;
         String query = "SELECT price FROM room WHERE roomID = ?";
         try {
             PreparedStatement pstm = con.prepareStatement(query);
             pstm.setString(1, roomId);
             ResultSet rs = pstm.executeQuery();
             if (rs.next()) {
-                double price = rs.getDouble("price");
-                con.close();
-                return price;
+                return price = rs.getDouble("price");
             }
         } catch (SQLException e) {
             e.printStackTrace();
